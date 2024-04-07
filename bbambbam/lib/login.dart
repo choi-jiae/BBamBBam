@@ -1,8 +1,6 @@
 import 'package:bbambbam/signup.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bbambbam/home.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -91,7 +89,13 @@ class _LoginState extends State<Login> {
                       width: 300,
                       height: 60,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Home()),
+                          );
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Colors.blueAccent),
