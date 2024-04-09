@@ -1,3 +1,4 @@
+import 'package:bbambbam/sidetap.dart';
 import 'package:flutter/material.dart';
 
 class Signup extends StatefulWidget {
@@ -27,16 +28,18 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text(
-              '회원가입',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: Colors.white,
-              ),
+          title: Text(
+            '회원가입',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
             ),
-            centerTitle: true,
-            backgroundColor: Colors.blue),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+        ),
+        drawer: Sidetap(),
         body: Form(
             key: formKey,
             child: SingleChildScrollView(
