@@ -1,3 +1,4 @@
+import 'package:bbambbam/mypage.dart';
 import 'package:flutter/material.dart';
 
 class Sidetap extends StatefulWidget {
@@ -35,7 +36,8 @@ class _SidetapState extends State<Sidetap> {
         ),
       ),
       MenuBuilder(name: "About", icondata: Icons.info_outline),
-      MenuBuilder(name: "마이페이지", icondata: Icons.person_outline),
+      MenuBuilder(
+          name: "마이페이지", icondata: Icons.person_outline, destination: Mypage()),
       MenuBuilder(name: "자주 묻는 질문", icondata: Icons.question_answer),
       MenuBuilder(name: "1:1 문의", icondata: Icons.mail_outline),
       MenuBuilder(name: "설정", icondata: Icons.settings),
@@ -50,13 +52,21 @@ class _SidetapState extends State<Sidetap> {
     ]));
   }
 
-  Widget MenuBuilder({String name = "HOME", IconData icondata = Icons.home}) {
+  Widget MenuBuilder(
+      {String name = "HOME",
+      IconData icondata = Icons.home,
+      Widget? destination}) {
     return ListTile(
         leading: Icon(icondata),
         iconColor: Colors.blue,
         focusColor: Colors.blue,
         title: Text(name),
-        onTap: () {},
+        onTap: () {
+          if (destination != null) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => destination));
+          }
+        },
         trailing: Icon(Icons.navigate_next));
   }
 }
