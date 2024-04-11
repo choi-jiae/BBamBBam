@@ -1,4 +1,6 @@
+import 'package:bbambbam/contact.dart';
 import 'package:bbambbam/mypage.dart';
+import 'package:bbambbam/qna.dart';
 import 'package:flutter/material.dart';
 
 class Sidetap extends StatefulWidget {
@@ -38,8 +40,12 @@ class _SidetapState extends State<Sidetap> {
       MenuBuilder(name: "About", icondata: Icons.info_outline),
       MenuBuilder(
           name: "마이페이지", icondata: Icons.person_outline, destination: Mypage()),
-      MenuBuilder(name: "자주 묻는 질문", icondata: Icons.question_answer),
-      MenuBuilder(name: "1:1 문의", icondata: Icons.mail_outline),
+      MenuBuilder(
+          name: "자주 묻는 질문",
+          icondata: Icons.question_answer,
+          destination: QNA()),
+      MenuBuilder(
+          name: "1:1 문의", icondata: Icons.mail_outline, destination: Contact()),
       MenuBuilder(name: "설정", icondata: Icons.settings),
       ListTile(
         leading: Icon(Icons.logout),

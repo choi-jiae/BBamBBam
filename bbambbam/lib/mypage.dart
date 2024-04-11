@@ -1,3 +1,4 @@
+import 'package:bbambbam/editText.dart';
 import 'package:flutter/material.dart';
 
 class Mypage extends StatefulWidget {
@@ -9,6 +10,14 @@ class Mypage extends StatefulWidget {
 
 class _MypageState extends State<Mypage> {
   final formKey = GlobalKey<FormState>();
+  final TextEditingController emailController =
+      TextEditingController(text: "limgm123@naver.com");
+  final TextEditingController nicknameController =
+      TextEditingController(text: "푸바오");
+  final TextEditingController passwordController =
+      TextEditingController(text: "1234");
+  final TextEditingController confirmPasswordController =
+      TextEditingController(text: "1234");
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +50,7 @@ class _MypageState extends State<Mypage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "푸바오",
+                      "pubao1",
                       style: TextStyle(color: Colors.black, fontSize: 20),
                     )
                   ],
@@ -57,42 +66,51 @@ class _MypageState extends State<Mypage> {
               Container(
                 child: Column(
                   children: [
-                    TextFormFieldComponent(
-                        context,
-                        "이메일",
-                        false,
-                        TextInputType.emailAddress,
-                        TextInputAction.next,
-                        "Email",
-                        8,
-                        "Email is too short"),
-                    TextFormFieldComponent(
-                        context,
-                        "아이디",
-                        false,
-                        TextInputType.text,
-                        TextInputAction.next,
-                        "ID",
-                        4,
-                        "ID is too short"),
-                    TextFormFieldComponent(
-                        context,
-                        "비밀번호",
-                        true,
-                        TextInputType.text,
-                        TextInputAction.next,
-                        "Password",
-                        8,
-                        "Password is too short"),
-                    TextFormFieldComponent(
-                        context,
-                        "비밀번호 확인",
-                        true,
-                        TextInputType.text,
-                        TextInputAction.done,
-                        "Confirm Password",
-                        8,
-                        "Password confirmation is too short"),
+                    SizedBox(height: 20),
+                    EditText(
+                        label: '이메일',
+                        obscureText: false,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.done,
+                        hintText: 'Enter your email',
+                        maxSize: 20,
+                        errorMessage: 'Email is too short',
+                        // value: "limgm123@naver.com",
+                        controller: emailController),
+                    EditText(
+                      label: '닉네임',
+                      obscureText: false,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      hintText: 'Enter your nickname',
+                      maxSize: 8,
+                      errorMessage: 'ID is too short',
+                      // value: "푸바오"
+                      controller: nicknameController,
+                    ),
+                    EditText(
+                      label: '비밀번호',
+                      obscureText: true,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      hintText: 'Enter your password',
+                      maxSize: 8,
+                      errorMessage: 'Password is too short',
+                      // value: "1234"
+                      controller: passwordController,
+                    ),
+                    EditText(
+                      label: '비밀번호 확인',
+                      obscureText: true,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      hintText: 'Enter your password',
+                      maxSize: 8,
+                      errorMessage: 'Password is too short',
+                      // value: "1234"
+                      controller: confirmPasswordController,
+                    ),
+                    SizedBox(height: 20),
                     Padding(
                       padding: EdgeInsets.all(16),
                       child: TextButton(
@@ -113,8 +131,57 @@ class _MypageState extends State<Mypage> {
                                 ),
                                 textAlign: TextAlign.center,
                               )),
-                          onPressed: () {}),
-                    )
+                          onPressed: () {
+                            String email = emailController.text;
+                            String nickname = nicknameController.text;
+                            String password = passwordController.text;
+                            String confirmPassword =
+                                confirmPasswordController.text;
+
+                            String userInfo =
+                                "이메일 : $email \n 닉네임: $nickname \n 비밀번호: $password";
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      title: Text("변경 확인"),
+                                      content: Text(userInfo),
+                                      actions: <Widget>[
+                                        TextButton(
+                                            child: Text("확인"),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            })
+                                      ]);
+                                });
+                          }),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: Text("탈퇴 확인"),
+                                    content: Text("정말로 탈퇴하겠습니까?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          child: Text("확인"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                      TextButton(
+                                          child: Text("취소"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          })
+                                    ]);
+                              });
+                        },
+                        child: Text(
+                          "회원 탈퇴",
+                          style: TextStyle(color: Colors.red),
+                        )),
                   ],
                 ),
               )
@@ -122,42 +189,5 @@ class _MypageState extends State<Mypage> {
   }
 }
 
-//마이페이지 수정 기능 구현 & 수정 시에만 비활성화 & 탈퇴하기 기능 구현
-Widget TextFormFieldComponent(
-    BuildContext context,
-    String label,
-    bool obscureText,
-    TextInputType keyboardType,
-    TextInputAction textInputAction,
-    String hintText,
-    int maxSize,
-    String errorMessage) {
-  bool _isEditable = false;
-
-  return Container(
-      padding: EdgeInsets.all(20),
-      width: MediaQuery.of(context).size.width,
-      child: Row(children: [
-        Expanded(
-          flex: 3,
-          child: Center(child: Text(label)),
-        ),
-        Expanded(
-            flex: 3,
-            child: TextFormField(
-                obscureText: obscureText,
-                keyboardType: keyboardType,
-                textInputAction: textInputAction,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  border: OutlineInputBorder(), // 입력 필드에 테두리 추가
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 10), // 입력 필드 내부 패딩 조정
-                ),
-                validator: (value) {
-                  if (value!.length < maxSize) {
-                    return errorMessage;
-                  }
-                }))
-      ]));
-}
+//데이터 유효성 검사, 이메일, 닉네임, 비밀번호 **id는 변경 불가!!
+//탈퇴하기 기능 구현
