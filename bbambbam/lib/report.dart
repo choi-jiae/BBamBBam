@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:bbambbam/report_mockdata.dart';
+import 'package:bbambbam/report_item.dart';
 
 class Report extends StatefulWidget {
   const Report({super.key});
@@ -19,7 +21,8 @@ class _ReportState extends State<Report> {
               topRight: Radius.circular(30),
             ),
           ),
-          child: Column(
+          child: SingleChildScrollView(
+            child:  Column(
             children: <Widget>[
               Container(
                 height: 5,
@@ -34,10 +37,19 @@ class _ReportState extends State<Report> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.only(left: 20, top: 10),
-                child: Text('📑 운전 리포트', style: TextStyle(color:Colors.black54, fontSize: 25, fontWeight: FontWeight.bold),),) 
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('📑 운전 리포트', style: TextStyle(color:Colors.black54, fontSize: 25, fontWeight: FontWeight.bold),),
+                    ...reportMockData.map((report) => ReportItem(report)), // mockData의 각 항목을 ReportItem으로 변환
+                  ],
+                ),)
+
               )
             ],
           ),
+          )
+         
         );
   }
 }
