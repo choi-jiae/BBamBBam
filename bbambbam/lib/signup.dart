@@ -39,7 +39,7 @@ class _SignupState extends State<Signup> {
           centerTitle: true,
           backgroundColor: Colors.blue,
         ),
-        drawer: Sidetap(),
+        // drawer: Sidetap(),
         body: Form(
             key: formKey,
             child: SingleChildScrollView(
