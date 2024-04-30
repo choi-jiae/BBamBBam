@@ -52,9 +52,25 @@ class _HomeState extends State<Home> {
             width: double.infinity,
             alignment: Alignment.center,
           ),
-          Positioned(
-            top: 340,
-            left: 65,
+          // Positioned(
+          //   top: 340,
+          //   left: 65,
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => const Driving()),
+          //       );
+          //     },
+          //     child: Image.asset(
+          //       'assets/images/handle.png',
+          //       width: 300,
+          //       height: 300,
+          //     ),
+          //   ),
+          // ),
+          Align(
+            alignment: Alignment(0, 0.15), // 이 값을 조절하여 위치를 정확히 조정하세요.
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
