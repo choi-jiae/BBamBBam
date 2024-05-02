@@ -1,6 +1,8 @@
 import 'package:bbambbam/contact.dart';
+import 'package:bbambbam/login.dart';
 import 'package:bbambbam/mypage.dart';
 import 'package:bbambbam/qna.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Sidetap extends StatefulWidget {
@@ -52,10 +54,22 @@ class _SidetapState extends State<Sidetap> {
         iconColor: Colors.blue,
         focusColor: Colors.blue,
         title: Text("로그아웃"),
-        onTap: () {},
+        onTap: () async {
+          await _logout();
+          // 로그아웃 후에 다른 화면으로 이동하거나 로그인 화면으로 돌아가는 로직을 추가할 수 있습니다.
+          // 예를 들어 로그인 화면으로 돌아간다면:
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Login()),
+          );
+        },
       )
       //알림
     ]));
+  }
+
+  _logout() async {
+    await FirebaseAuth.instance.signOut();
   }
 
   Widget MenuBuilder(
