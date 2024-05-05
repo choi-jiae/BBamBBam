@@ -18,7 +18,7 @@ class _QNAState extends State<QNA> {
               fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blueAccent,
       ),
       body: ListView(
         children: <Widget>[

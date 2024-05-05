@@ -14,21 +14,12 @@ class landing extends StatefulWidget {
 }
 
 class _landingState extends State<landing> {
-  // void initState() {
-  //   Timer(Duration(seconds: 3), () {
-  //     // Get.to(Login());
-  //   });
-  //   super.initState();
-  // }
-
   @override
   void initState() {
     super.initState();
     Timer(Duration(seconds: 3), () {
-      // Get.to(Login());
       // _permission();
       _auth();
-      // _logout();
     });
   }
 
@@ -53,13 +44,11 @@ class _landingState extends State<landing> {
   _auth() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (FirebaseAuth.instance.currentUser == null) {
-        // Get.off(() => Login());
-        Get.to(Login());
-        //Navigator.of(context).pushNamed("/login");
+        //Get.to(Login());
+        Navigator.of(context).pushNamed("/login");
       } else {
-        // Get.off(() => Home());
-        Get.to(Home());
-        //Navigator.of(context).pushReplacementNamed("/first");
+        //Get.to(Home());
+        Navigator.of(context).pushNamed("/home");
       }
     });
   }

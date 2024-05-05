@@ -11,6 +11,15 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 
+final routes = {
+  "/": (context) => const landing(),
+  "/login": (context) => const Login(),
+  "/home": (context) => const Home(),
+  "/my": (context) => const Mypage(),
+  "/contact": (context) => const Contact(),
+  "/qna": (context) => const QNA(),
+};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -36,30 +45,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      routes: {
-        "/login": (context) => const Login(),
-        "/home": (context) => const Home(),
-        "/my": (context) => const Mypage(),
-        "/contact": (context) => const Contact(),
-        "/qna": (context) => const QNA(),
-      },
+      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: routes,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({super.key, required this.title});
 
-  final String title;
+//   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
 
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(home: landing());
-  }
-}
+// class _MyHomePageState extends State<MyHomePage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetMaterialApp(home: landing());
+//   }
+// }

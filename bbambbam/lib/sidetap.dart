@@ -48,7 +48,7 @@ class _SidetapState extends State<Sidetap> {
                         ),
                         accountEmail: Text((snapshot.data as Map)['Email']),
                         decoration: BoxDecoration(
-                          color: Colors.lightBlue[400],
+                          color: Colors.blueAccent,
                           borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(10.0),
                             bottomRight: Radius.circular(10.0),
@@ -58,21 +58,24 @@ class _SidetapState extends State<Sidetap> {
                       MenuBuilder(name: "About", icondata: Icons.info_outline),
                       MenuBuilder(
                           name: "마이페이지",
+                          path: "/my",
                           icondata: Icons.person_outline,
                           destination: Mypage()),
                       MenuBuilder(
                           name: "자주 묻는 질문",
+                          path: "/qna",
                           icondata: Icons.question_answer,
                           destination: QNA()),
                       MenuBuilder(
                           name: "1:1 문의",
+                          path: "/contact",
                           icondata: Icons.mail_outline,
                           destination: Contact()),
                       MenuBuilder(name: "설정", icondata: Icons.settings),
                       ListTile(
                         leading: Icon(Icons.logout),
-                        iconColor: Colors.blue,
-                        focusColor: Colors.blue,
+                        iconColor: Colors.blueAccent,
+                        focusColor: Colors.blueAccent,
                         title: Text("로그아웃"),
                         onTap: () async {
                           await _logout();
@@ -96,18 +99,19 @@ class _SidetapState extends State<Sidetap> {
 
   Widget MenuBuilder(
       {String name = "HOME",
+      String path = "/home",
       IconData icondata = Icons.home,
       Widget? destination}) {
     return ListTile(
         leading: Icon(icondata),
-        iconColor: Colors.blue,
-        focusColor: Colors.blue,
+        iconColor: Colors.blueAccent,
+        focusColor: Colors.blueAccent,
         title: Text(name),
         onTap: () {
           if (destination != null) {
-            // Navigator.pushNamed("/")
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => destination));
+            Navigator.of(context).pushNamed(path);
+            // Navigator.push(
+            //     context, MaterialPageRoute(builder: (context) => destination));
           }
         },
         trailing: Icon(Icons.navigate_next));

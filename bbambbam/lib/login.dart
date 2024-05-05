@@ -148,11 +148,11 @@ class _LoginState extends State<Login> {
                 .signInWithEmailAndPassword(
                     email: _emailController.text, password: _pwController.text)
                 .then((_) => {
-                      //Navigator.of(context).pushReplacementNamed("/home"),
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Home()),
-                      )
+                      Navigator.of(context).pushNamed("/home"),
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => const Home()),
+                      // )
                     });
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -33,17 +33,22 @@ class _ContactState extends State<Contact> {
           "Title": _titleController.text,
           "Content": _contentController.text
         });
-        AlertDialog(
-          title: Text("문의 확인"),
-          content: Text("문의가 완료되었습니다."),
-          actions: <Widget>[
-            TextButton(
-                child: Text("확인"),
-                onPressed: () {
-                  Navigator.of(context).pop(); // 다이얼로그 닫기
-                }),
-          ],
-        );
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("문의 확인"),
+                content: Text("문의가 완료되었습니다."),
+                actions: <Widget>[
+                  TextButton(
+                      child: Text("확인"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushReplacementNamed("/home");
+                      }),
+                ],
+              );
+            });
       } on Exception catch (e) {
         debugPrint('Error: $e');
       }
@@ -66,7 +71,7 @@ class _ContactState extends State<Contact> {
               fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Form(
         key: _formKey,
@@ -98,65 +103,61 @@ class _ContactState extends State<Contact> {
               // 내용 입력 필드
               SizedBox(height: 20),
               Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0), // 필드 사이에 간격 추가
-                  child: HangulWebKeyboardSetting(
-                    controller: _contentController,
-                    child: TextFormField(
-                      decoration: InputDecoration(labelText: '내용'),
-                      controller: _contentController,
-                      maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return '내용을 입력해주세요.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _content = value!;
-                      },
-                    ),
-                  )
-                  // TextFormField(
-                  //   decoration: InputDecoration(labelText: '내용'),
-                  //   controller: _contentController,
-                  //   maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
-                  //   validator: (value) {
-                  //     if (value == null || value.trim().isEmpty) {
-                  //       return '내용을 입력해주세요.';
-                  //     }
-                  //     return null;
-                  //   },
-                  //   onSaved: (value) {
-                  //     _content = value!;
-                  //   },
-                  // ),
-                  ),
+                padding: const EdgeInsets.only(bottom: 16.0), // 필드 사이에 간격 추가
+                // child: HangulWebKeyboardSetting(
+                //   controller: _contentController,
+                //   child: TextFormField(
+                //     decoration: InputDecoration(labelText: '내용'),
+                //     controller: _contentController,
+                //     maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
+                //     validator: (value) {
+                //       if (value == null || value.trim().isEmpty) {
+                //         return '내용을 입력해주세요.';
+                //       }
+                //       return null;
+                //     },
+                //     onSaved: (value) {
+                //       _content = value!;
+                //     },
+                //   ),
+                //)
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: '내용'),
+                  controller: _contentController,
+                  maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return '내용을 입력해주세요.';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _content = value!;
+                  },
+                ),
+              ),
               SizedBox(height: 40),
               // 제출 버튼
-              TextButton(
-                child: Container(
-                    height: 40,
-                    width: MediaQuery.of(context).size.width / 2,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Colors.blue,
-                    ),
-                    child: Text('제출하기',
+              Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  child: SizedBox(
+                    width: 200,
+                    height: 60,
+                    child: TextButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blueAccent),
+                      ),
+                      child: const Text(
+                        '제출하기',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Colors.white),
-                        textAlign: TextAlign.center)),
-
-                onPressed: _submitQuestion,
-                // child: Text('제출하기',
-                //     style: TextStyle(
-                //         fontWeight: FontWeight.bold,
-                //         fontSize: 20,
-                //         color: Colors.white),
-                //     textAlign: TextAlign.center),
-              ),
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal),
+                      ),
+                      onPressed: _submitQuestion,
+                    ),
+                  )),
             ],
           ),
         ),

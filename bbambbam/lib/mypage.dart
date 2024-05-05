@@ -36,7 +36,7 @@ class _MypageState extends State<Mypage> {
             ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blueAccent,
         ),
         body: FutureBuilder(
             future: getUserInfo(),
@@ -237,9 +237,9 @@ class _MypageState extends State<Mypage> {
                       child: Text("확인"),
                       onPressed: () {
                         Navigator.of(context).pop(); // 다이얼로그 닫기
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
-                        //Navigator.of(context).pushReplacementNamed("/login");
+                        // Navigator.push(context,
+                        //     MaterialPageRoute(builder: (context) => Login()));
+                        Navigator.of(context).pushNamed("/login");
                       }),
                 ],
               );

@@ -44,7 +44,7 @@ class _SignupState extends State<Signup> {
             ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blueAccent,
         ),
         // drawer: Sidetap(),
         body: Form(
@@ -107,7 +107,7 @@ class _SignupState extends State<Signup> {
                                   });
                                 }
                               },
-                              activeColor: Colors.blue,
+                              activeColor: Colors.blueAccent,
                             ),
                           ])),
                   Container(
