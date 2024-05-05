@@ -1,8 +1,10 @@
 import 'package:bbambbam/editText.dart';
+import 'package:bbambbam/login.dart';
 import 'package:bbambbam/psEditText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class Mypage extends StatefulWidget {
   const Mypage({super.key});
@@ -174,6 +176,7 @@ class _MypageState extends State<Mypage> {
                                                   TextButton(
                                                       child: Text("확인"),
                                                       onPressed: () {
+                                                        _withdrawal();
                                                         Navigator.of(context)
                                                             .pop();
                                                       }),
@@ -197,6 +200,54 @@ class _MypageState extends State<Mypage> {
                     : Center(child: CircularProgressIndicator());
               }
             }));
+  }
+
+  Future<void> _deleteUserStore(String uid) async {
+    try {
+      FirebaseFirestore.instance.collection('User').doc(uid).delete();
+    } catch (e) {
+      print("Error deleting user data from Firestore: $e");
+    }
+  }
+
+  Future<void> _deleteUserAuth() async {
+    try {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      await currentUser?.delete();
+    } catch (e) {
+      print("Error deleting user from Firebase Auth: $e");
+    }
+  }
+
+  Future<void> _withdrawal() async {
+    try {
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        await _deleteUserStore(uid);
+        await _deleteUserAuth();
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("탈퇴 확인"),
+                content: Text("탈퇴가 완료되었습니다."),
+                actions: <Widget>[
+                  TextButton(
+                      child: Text("확인"),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 다이얼로그 닫기
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Login()));
+                        //Navigator.of(context).pushReplacementNamed("/login");
+                      }),
+                ],
+              );
+            });
+      }
+    } on Exception catch (e) {
+      print(e);
+    }
   }
 }
 

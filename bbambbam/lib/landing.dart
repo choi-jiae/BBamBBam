@@ -55,9 +55,11 @@ class _landingState extends State<landing> {
       if (FirebaseAuth.instance.currentUser == null) {
         // Get.off(() => Login());
         Get.to(Login());
+        //Navigator.of(context).pushNamed("/login");
       } else {
         // Get.off(() => Home());
         Get.to(Home());
+        //Navigator.of(context).pushReplacementNamed("/first");
       }
     });
   }

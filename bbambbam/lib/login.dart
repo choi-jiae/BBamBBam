@@ -148,17 +148,30 @@ class _LoginState extends State<Login> {
                 .signInWithEmailAndPassword(
                     email: _emailController.text, password: _pwController.text)
                 .then((_) => {
+                      //Navigator.of(context).pushReplacementNamed("/home"),
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const Home()),
                       )
                     });
           } on FirebaseAuthException catch (e) {
-            if (e.code == 'user-not-found') {
-              debugPrint('No user found for that email.');
-            } else if (e.code == 'wrong-password') {
-              debugPrint('Wrong password provided for that user.');
-            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("사용자 정보가 일치하지 않습니다."),
+              duration: Duration(seconds: 1),
+            ));
+            // if (e.code == 'user-not-found') {
+            //   debugPrint('No user found for that email.');
+            //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //     content: Text("이메일 사용자 정보가 존재하지 않습니다."),
+            //     duration: Duration(seconds: 1),
+            //   ));
+            // } else if (e.code == 'wrong-password') {
+            //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            //     content: Text("비밀번호가 일치하지 않습니다."),
+            //     duration: Duration(seconds: 1),
+            //   ));
+            //   debugPrint('Wrong password provided for that user.');
+            // }
           }
         }
       },

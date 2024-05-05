@@ -1,3 +1,6 @@
+import 'package:bbambbam/hanglWebKeyboardSetting.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Contact extends StatefulWidget {
@@ -11,14 +14,45 @@ class _ContactState extends State<Contact> {
   final _formKey = GlobalKey<FormState>();
   String _title = '';
   String _content = '';
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+
+  final textController = TextEditingController();
 
   void _submitQuestion() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+      try {
+        String uid = FirebaseAuth.instance.currentUser!.uid;
+        String questionId = DateTime.now().millisecondsSinceEpoch.toString();
+        FirebaseFirestore.instance
+            .collection("Contact")
+            .doc(uid)
+            .collection("Question")
+            .doc(questionId)
+            .set({
+          "Title": _titleController.text,
+          "Content": _contentController.text
+        });
+        AlertDialog(
+          title: Text("문의 확인"),
+          content: Text("문의가 완료되었습니다."),
+          actions: <Widget>[
+            TextButton(
+                child: Text("확인"),
+                onPressed: () {
+                  Navigator.of(context).pop(); // 다이얼로그 닫기
+                }),
+          ],
+        );
+      } on Exception catch (e) {
+        debugPrint('Error: $e');
+      }
+
+      //_formKey.currentState!.save();
       // 여기서 _question 변수에 사용자가 입력한 질문이 저장됩니다.
       // 서버에 질문을 제출하는 로직을 추가하세요. 예를 들어, Firebase와의 통신 등.
-      print('제출된 제목: $_title');
-      print('제출된 내용: $_content');
+      //print('제출된 제목: $_title');
+      //print('제출된 내용: $_content');
     }
   }
 
@@ -48,6 +82,8 @@ class _ContactState extends State<Contact> {
                 padding: const EdgeInsets.only(bottom: 8.0), // 필드 사이에 간격 추가
                 child: TextFormField(
                   decoration: InputDecoration(labelText: '제목'),
+                  controller: _titleController,
+                  maxLines: null,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return '제목을 입력해주세요.';
@@ -62,21 +98,39 @@ class _ContactState extends State<Contact> {
               // 내용 입력 필드
               SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0), // 필드 사이에 간격 추가
-                child: TextFormField(
-                  decoration: InputDecoration(labelText: '내용'),
-                  maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '내용을 입력해주세요.';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _content = value!;
-                  },
-                ),
-              ),
+                  padding: const EdgeInsets.only(bottom: 16.0), // 필드 사이에 간격 추가
+                  child: HangulWebKeyboardSetting(
+                    controller: _contentController,
+                    child: TextFormField(
+                      decoration: InputDecoration(labelText: '내용'),
+                      controller: _contentController,
+                      maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return '내용을 입력해주세요.';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _content = value!;
+                      },
+                    ),
+                  )
+                  // TextFormField(
+                  //   decoration: InputDecoration(labelText: '내용'),
+                  //   controller: _contentController,
+                  //   maxLines: 5, // 내용 입력 필드를 다줄 입력으로 설정
+                  //   validator: (value) {
+                  //     if (value == null || value.trim().isEmpty) {
+                  //       return '내용을 입력해주세요.';
+                  //     }
+                  //     return null;
+                  //   },
+                  //   onSaved: (value) {
+                  //     _content = value!;
+                  //   },
+                  // ),
+                  ),
               SizedBox(height: 40),
               // 제출 버튼
               TextButton(

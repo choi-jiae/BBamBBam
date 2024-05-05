@@ -1,6 +1,13 @@
+import 'package:bbambbam/contact.dart';
+import 'package:bbambbam/home.dart';
 import 'package:bbambbam/landing.dart';
+import 'package:bbambbam/login.dart';
+import 'package:bbambbam/mypage.dart';
+import 'package:bbambbam/qna.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
 
@@ -17,13 +24,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shortcuts = Map.of(WidgetsApp.defaultShortcuts);
+    shortcuts[LogicalKeySet(LogicalKeyboardKey.space)] = ActivateIntent();
+
     return MaterialApp(
+      shortcuts: kIsWeb ? shortcuts : null,
+      //scrollBehavior: MyCustomScrollBehavior(),
+
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routes: {
+        "/login": (context) => const Login(),
+        "/home": (context) => const Home(),
+        "/my": (context) => const Mypage(),
+        "/contact": (context) => const Contact(),
+        "/qna": (context) => const QNA(),
+      },
     );
   }
 }

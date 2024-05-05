@@ -105,6 +105,7 @@ class _SidetapState extends State<Sidetap> {
         title: Text(name),
         onTap: () {
           if (destination != null) {
+            // Navigator.pushNamed("/")
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => destination));
           }
