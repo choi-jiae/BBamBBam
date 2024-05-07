@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       shortcuts: kIsWeb ? shortcuts : null,
       //scrollBehavior: MyCustomScrollBehavior(),
 
-      title: 'Flutter Demo',
+      title: 'BBAM BBAM',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

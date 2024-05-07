@@ -69,8 +69,9 @@ class _MypageState extends State<Mypage> {
                               children: <Widget>[
                                 CircleAvatar(
                                   radius: 40,
-                                  backgroundImage:
-                                      AssetImage('assets/image/pubao.jpg'),
+                                  backgroundImage: Image.network(
+                                          (snapshot.data as Map)['UserImage'])
+                                      .image,
                                 ),
                                 SizedBox(height: 8),
                                 Text(

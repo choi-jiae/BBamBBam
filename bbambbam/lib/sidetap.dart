@@ -33,7 +33,10 @@ class _SidetapState extends State<Sidetap> {
                       UserAccountsDrawerHeader(
                         currentAccountPicture: CircleAvatar(
                             backgroundImage:
-                                AssetImage('assets/image/pubao.jpg')),
+                                // AssetImage('assets/images/handle.png')),
+                                Image.network(
+                                        (snapshot.data as Map)['UserImage'])
+                                    .image),
                         // Icon(
                         //   Icons.account_circle,
                         // ),

@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:bbambbam/sidetap.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -12,6 +16,9 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   final formKey = GlobalKey<FormState>();
+  File? _image;
+  // String imageUrl = "gs://bbambbam-a937f.appspot.com/userimage/pubao.jpg";
+  String? imageUrl;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -54,12 +61,27 @@ class _SignupState extends State<Signup> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                      padding: EdgeInsets.only(top: 30, bottom: 30),
-                      child: Center(
-                          child: Icon(
-                        Icons.account_circle,
-                        size: MediaQuery.of(context).size.width / 4,
-                      ))),
+                    padding: EdgeInsets.only(top: 30, bottom: 30),
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: getImage, //누르면 이동
+                        child: CircleAvatar(
+                          radius: MediaQuery.of(context).size.width / 4,
+                          backgroundImage:
+                              _image != null ? FileImage(_image!) : null,
+                          // backgroundColor: Colors.blue,
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              child:
+                                  Icon(Icons.camera_alt, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   TextFormFieldComponent(
                       context,
                       _emailController,
@@ -123,6 +145,40 @@ class _SignupState extends State<Signup> {
             )));
   }
 
+  Future getImage() async {
+    final pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery); //이미지 선택 기다리기
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path); //이미지 파일로 설정
+      });
+    }
+  }
+
+  Future uploadImageToFirebase(String uid) async {
+    // if (_image == null) {
+    //   //image가 없으면 return
+    //   return "";
+    // }
+    // DateTime.now().millisecondsSinceEpoch
+    String fileName = 'userimage/${uid}.jpg';
+    FirebaseStorage storage = FirebaseStorage.instance;
+
+    try {
+      if (_image == null) {
+        fileName = 'userimage/pubao.jpg';
+        imageUrl = await storage.ref(fileName).getDownloadURL();
+      } else {
+        await storage.ref(fileName).putFile(_image!);
+        imageUrl = await storage.ref(fileName).getDownloadURL();
+        print('Image uploaded to Firebase Storage.');
+      }
+    } catch (e) {
+      print(e);
+      return "";
+    }
+  }
+
   ElevatedButton submitButton() {
     return ElevatedButton(
       onPressed: () async {
@@ -141,13 +197,22 @@ class _SignupState extends State<Signup> {
               email: _emailController.text,
               password: _pwController.text,
             )
-                .then((credential) {
+                .then((credential) async {
               final user = credential.user;
               if (user != null) {
                 String uid = user.uid;
+
+                await uploadImageToFirebase(uid);
+
+                if (imageUrl == null) {
+                  imageUrl =
+                      "gs://bbambbam-a937f.appspot.com/userimage/pubao.jpg";
+                }
+
                 FirebaseFirestore.instance.collection('User').doc(uid).set({
                   'Email': _emailController.text,
                   'Name': _nameController.text,
+                  "UserImage": imageUrl,
                 });
               } else {
                 debugPrint("Failed to create user.");
