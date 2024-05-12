@@ -13,12 +13,21 @@ class landing extends StatefulWidget {
   State<landing> createState() => _landingState();
 }
 
-class _landingState extends State<landing> {
+class _landingState extends State<landing> with SingleTickerProviderStateMixin {
+  AnimationController? _controller;
+  Animation<double>? _animation;
+
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
-      // _permission();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(parent: _controller!, curve: Curves.easeIn);
+
+    // _permission();
+    _controller!.forward().then((_) {
       _auth();
     });
   }
@@ -26,12 +35,30 @@ class _landingState extends State<landing> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            color: Colors.blue, child: const Center(child: Text("BBam BBam"))));
+      backgroundColor: Colors.white, // 배경 색상 흰색
+      body: Center(
+        child: FadeTransition(
+          opacity: _animation!, // 페이드 애니메이션 적용
+          child: Text(
+            'BBAM BBAM',
+            style: TextStyle(
+              fontSize: 40, // 글자 크기
+              color: Colors.blueAccent,
+              fontWeight: FontWeight.bold, // 글자 색상 파란색
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Scaffold(
+    //     body: Container(
+    //         color: Colors.blue, child: const Center(child: Text("BBam BBam"))));
   }
 
   @override
   void dispose() {
+    _controller!.dispose();
     super.dispose();
   }
 
