@@ -25,7 +25,9 @@ class _DrivingState extends State<Driving> {
 
   Future<void> _initalizeCamera() async {
     final cameras = await availableCameras();
-    final firstCamera = cameras.first;
+    final firstCamera = cameras.firstWhere(
+      (camera) => camera.lensDirection == CameraLensDirection.front,
+    );
 
     _controller = CameraController(
       firstCamera,
@@ -80,10 +82,8 @@ class _DrivingState extends State<Driving> {
                   bottom: 0,
                   child: FloatingActionButton(
                       child: Icon(Icons.stop),
-                      onPressed: () => Builder(builder: (context) {
-                            handleStopClick(context);
-                            return Container();
-                          })),
+                      onPressed: () => handleStopClick(context)
+                          ),
                 ),
                 Positioned(
                   right: 0,
@@ -107,10 +107,10 @@ class _DrivingState extends State<Driving> {
 
   void handleStopClick(BuildContext context) {
     try {
+      print('Stop Clicked');
       _controller.dispose();
       _addReport();
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Home()));
+      Navigator.of(context).pop();
     } catch (e) {
       print('Error: $e');
     }
