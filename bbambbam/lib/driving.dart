@@ -26,12 +26,10 @@ class _DrivingState extends State<Driving> {
 
   Future<void> _initalizeCamera() async {
     final cameras = await availableCameras();
-    final frontCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
+    final firstCamera = cameras.first;
 
     _controller = CameraController(
-      frontCamera,
+      firstCamera,
       ResolutionPreset.medium,
     );
 
@@ -48,7 +46,6 @@ class _DrivingState extends State<Driving> {
   }
 
   Future<void> _addReport() async{
-    if (_user != null ) {
       CollectionReference reports = 
         FirebaseFirestore.instance.collection('User').doc(_user.uid).collection('Reports');
       await reports.add(
@@ -60,7 +57,7 @@ class _DrivingState extends State<Driving> {
           'time_stamp': '00:00:00, 00:00:00, 00:00:00',
         }
       );
-    }
+    
   }
 
   @override
@@ -87,8 +84,12 @@ class _DrivingState extends State<Driving> {
                 bottom: 0,
                 child: FloatingActionButton(
                   child: Icon(Icons.stop),
-                  onPressed: () => handleStopClick(context)
-                  
+                  onPressed: () => Builder(
+                    builder: (context){
+                      handleStopClick(context);
+                      return Container();
+                    }
+                  )
                   ),
               ),
               Positioned(
