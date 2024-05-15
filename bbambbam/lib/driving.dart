@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bbambbam/home.dart';
 
-
 class Driving extends StatefulWidget {
   const Driving({super.key});
 
@@ -33,7 +32,8 @@ class _DrivingState extends State<Driving> {
       ResolutionPreset.medium,
     );
 
-    _initializeControllerFuture = _controller.initialize();
+    // _initializeControllerFuture = _controller.initialize();
+    await _controller.initialize();
   }
 
   Future<void> _getUser() async {
@@ -45,19 +45,18 @@ class _DrivingState extends State<Driving> {
     }
   }
 
-  Future<void> _addReport() async{
-      CollectionReference reports = 
-        FirebaseFirestore.instance.collection('User').doc(_user.uid).collection('Reports');
-      await reports.add(
-        {
-          'warning': true,
-          'date': '2022-01-02',
-          'start_driving_time': '00:00:00',
-          'end_driving_time': '00:00:00',
-          'time_stamp': '00:00:00, 00:00:00, 00:00:00',
-        }
-      );
-    
+  Future<void> _addReport() async {
+    CollectionReference reports = FirebaseFirestore.instance
+        .collection('User')
+        .doc(_user.uid)
+        .collection('Reports');
+    await reports.add({
+      'warning': true,
+      'date': '2022-01-02',
+      'start_driving_time': '00:00:00',
+      'end_driving_time': '00:00:00',
+      'time_stamp': '00:00:00, 00:00:00, 00:00:00',
+    });
   }
 
   @override
@@ -66,65 +65,54 @@ class _DrivingState extends State<Driving> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Stack(
-            children: <Widget>[
-              CameraPreview(_controller),
-              Positioned(
-                left: 0,
-                bottom: 0,
-                child: FloatingActionButton(
-                  child: Icon(Icons.stop),
-                  onPressed: () => Builder(
-                    builder: (context){
-                      handleStopClick(context);
-                      return Container();
-                    }
-                  )
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Stack(
+              children: <Widget>[
+                CameraPreview(_controller),
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: FloatingActionButton(
+                      child: Icon(Icons.stop),
+                      onPressed: () => Builder(builder: (context) {
+                            handleStopClick(context);
+                            return Container();
+                          })),
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: FloatingActionButton(
+                    child: Icon(Icons.pause),
+                    onPressed: () {
+                      _controller.pauseVideoRecording();
+                    },
                   ),
-              ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: FloatingActionButton(
-                  child: Icon(Icons.pause),
-                  onPressed: (){
-                    _controller.pauseVideoRecording();
-                  },
-                  ),
-              ),
-            ],
-          );
-          
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
-
   }
 
-    void handleStopClick(BuildContext context) {
-      try {
-        _controller.dispose();
-        _addReport();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Home())
-        );
-      } catch (e) {
-        print('Error: $e');
-      }
+  void handleStopClick(BuildContext context) {
+    try {
+      _controller.dispose();
+      _addReport();
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const Home()));
+    } catch (e) {
+      print('Error: $e');
     }
-
   }
+}
