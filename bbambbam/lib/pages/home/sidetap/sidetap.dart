@@ -1,7 +1,7 @@
-import 'package:bbambbam/contact.dart';
-import 'package:bbambbam/login.dart';
-import 'package:bbambbam/mypage.dart';
-import 'package:bbambbam/qna.dart';
+import 'package:bbambbam/pages/home/sidetap/contact.dart';
+import 'package:bbambbam/pages/auth/login.dart';
+import 'package:bbambbam/pages/home/sidetap/mypage.dart';
+import 'package:bbambbam/pages/home/sidetap/qna.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

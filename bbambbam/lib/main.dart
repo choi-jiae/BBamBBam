@@ -1,9 +1,9 @@
-import 'package:bbambbam/contact.dart';
-import 'package:bbambbam/home.dart';
+import 'package:bbambbam/pages/home/sidetap/contact.dart';
+import 'package:bbambbam/pages/home/home.dart';
 import 'package:bbambbam/landing.dart';
-import 'package:bbambbam/login.dart';
-import 'package:bbambbam/mypage.dart';
-import 'package:bbambbam/qna.dart';
+import 'package:bbambbam/pages/auth/login.dart';
+import 'package:bbambbam/pages/home/sidetap/mypage.dart';
+import 'package:bbambbam/pages/home/sidetap/qna.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:bbambbam/driving.dart';
-import 'package:bbambbam/report.dart';
-import 'package:bbambbam/sidetap.dart';
+import 'package:bbambbam/pages/driving/driving.dart';
+import 'package:bbambbam/pages/report/report.dart';
+import 'package:bbambbam/pages/home/sidetap/sidetap.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

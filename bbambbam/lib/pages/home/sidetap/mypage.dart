@@ -1,5 +1,5 @@
 import 'package:bbambbam/editText.dart';
-import 'package:bbambbam/login.dart';
+import 'package:bbambbam/pages/auth/login.dart';
 import 'package:bbambbam/psEditText.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
