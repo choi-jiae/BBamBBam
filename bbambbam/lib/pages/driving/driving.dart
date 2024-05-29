@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bbambbam/home.dart';
+import 'package:bbambbam/pages/home/home.dart';
 
 class Driving extends StatefulWidget {
   const Driving({super.key});

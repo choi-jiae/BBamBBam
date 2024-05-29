@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:bbambbam/report_mockdata.dart';
-import 'package:bbambbam/report_item.dart';
+import 'package:bbambbam/pages/report/report_mockdata.dart';
+import 'package:bbambbam/pages/report/report_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

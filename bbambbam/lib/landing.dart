@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:bbambbam/home.dart';
-import 'package:bbambbam/login.dart';
+import 'package:bbambbam/pages/home/home.dart';
+import 'package:bbambbam/pages/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
