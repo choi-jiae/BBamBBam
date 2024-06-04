@@ -4,6 +4,7 @@ import 'package:bbambbam/landing.dart';
 import 'package:bbambbam/pages/auth/login.dart';
 import 'package:bbambbam/pages/home/sidetap/mypage.dart';
 import 'package:bbambbam/pages/home/sidetap/qna.dart';
+import 'package:bbambbam/services/service_locator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,6 +23,7 @@ final routes = {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

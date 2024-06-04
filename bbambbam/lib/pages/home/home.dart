@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:bbambbam/services/model_inference_service.dart';
+import 'package:bbambbam/services/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:bbambbam/pages/driving/driving.dart';
@@ -72,12 +74,7 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment(0, 0.15), // 이 값을 조절하여 위치를 정확히 조정하세요.
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Driving()),
-                );
-              },
+              onTap: () => _onTapCamera(context),
               child: Image.asset(
                 'assets/images/handle.png',
                 width: 300,
@@ -131,4 +128,17 @@ class _HomeState extends State<Home> {
       ),
     );
   }
+}
+
+void _onTapCamera(BuildContext context) {
+  locator<ModelInferenceService>().setModelConfig();
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) {
+        return Driving();
+      },
+    ),
+  );
 }

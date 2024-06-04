@@ -44,13 +44,13 @@ dependencies:
   camera:
   equatable:
   image: ^3.0.2
-
+  flutter_screenutil:
   get_it: ^7.6.7
 
   # tensorflow
   tflite_flutter: ^0.9.5
   tflite_flutter_helper: ^0.2.1
-
+  # tflite:
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +75,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/model/
     - assets/image/pubao.jpg
     - assets/images/background.png
     - assets/images/handle.png

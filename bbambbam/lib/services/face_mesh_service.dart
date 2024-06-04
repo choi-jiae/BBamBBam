@@ -31,6 +31,8 @@ class FaceMesh extends AiModel {
 
   @override
   Future<void> loadModel() async {
+    print(
+        "model load...-----------------------------------------------------------");
     try {
       final interpreterOptions = InterpreterOptions();
 
@@ -46,6 +48,7 @@ class FaceMesh extends AiModel {
     } catch (e) {
       log('Error while creating interpreter: $e');
     }
+    print("Completed load models!");
   }
 
   @override
@@ -61,17 +64,26 @@ class FaceMesh extends AiModel {
 
   @override
   Map<String, dynamic>? predict(image_lib.Image image) {
+    print("predict funtcion~~~~~~");
     if (interpreter == null) {
+      print("Interpreter is null");
       return null;
     }
-
+    print("Original image dimensions: ${image.width}x${image.height}");
     if (Platform.isAndroid) {
       image = image_lib.copyRotate(image, -90);
       image = image_lib.flipHorizontal(image);
+      print("image convert~~~~~~~~~");
+      print("Image converted (rotated and flipped) for Android");
     }
     final tensorImage = TensorImage(TfLiteType.float32);
     tensorImage.loadImage(image);
+    print("TensorImage loaded: ${tensorImage.buffer}");
+
     final inputImage = getProcessedImage(tensorImage);
+    print("Processed TensorImage: ${inputImage.buffer}");
+
+    print("outputShape: ${outputShapes}");
 
     TensorBuffer outputLandmarks = TensorBufferFloat(outputShapes[0]);
     TensorBuffer outputScores = TensorBufferFloat(outputShapes[1]);
@@ -84,12 +96,20 @@ class FaceMesh extends AiModel {
     };
 
     interpreter!.runForMultipleInputs(inputs, outputs);
+    print("Inference run completed");
 
-    if (outputScores.getDoubleValue(0) < 0) {
-      return null;
-    }
+    double score = outputScores.getDoubleValue(0);
+    print("Output score: ${score}");
+    print("outputLandmark: ${outputLandmarks.getDoubleList().shape}");
+
+    // if (outputScores.getDoubleValue(0) < 0) {
+    //   print("outputScore is null");
+    //   return null;
+    // }
 
     final landmarkPoints = outputLandmarks.getDoubleList().reshape([468, 3]);
+    print("Landmark points: $landmarkPoints");
+
     final landmarkResults = <Offset>[];
     for (var point in landmarkPoints) {
       landmarkResults.add(Offset(
@@ -97,16 +117,18 @@ class FaceMesh extends AiModel {
         point[1] / inputSize * image.height,
       ));
     }
-
+    print("Landmark results: $landmarkResults");
     return {'point': landmarkResults};
   }
 }
 
 Map<String, dynamic>? runFaceMesh(Map<String, dynamic> params) {
+  print("i/m run face mesh!!------------------------------------");
   final faceMesh =
       FaceMesh(interpreter: Interpreter.fromAddress(params['detectorAddress']));
   final image = ImageUtils.convertCameraImage(params['cameraImage']);
+  print("Converted image: ${image}");
   final result = faceMesh.predict(image!);
-
+  print("run face mesh result : ${result}");
   return result;
 }

@@ -25,6 +25,8 @@ class ModelInferenceService {
     required CameraImage cameraImage,
   }) async {
     final responsePort = ReceivePort();
+    print(
+        "Sending message with params: {'cameraImage': ${cameraImage}, 'detectorAddress': ${model.getAddress}}");
 
     isolateUtils.sendMessage(
       handler: handler,
@@ -37,28 +39,13 @@ class ModelInferenceService {
     );
 
     inferenceResults = await responsePort.first;
+    print("inference Result is: ${inferenceResults}");
     responsePort.close();
   }
 
   // TODO : Models enum 제거하기
-  void setModelConfig(int index) {
-    switch (Models.values[index]) {
-      case Models.faceDetection:
-        // model = locator<FaceDetection>();
-        // handler = runFaceDetector;
-        break;
-      case Models.faceMesh:
-        model = locator<FaceMesh>();
-        handler = runFaceMesh;
-        break;
-      case Models.hands:
-        // model = locator<Hands>();
-        // handler = runHandDetector;
-        break;
-      case Models.pose:
-        // model = locator<Pose>();
-        // handler = runPoseEstimator;
-        break;
-    }
+  void setModelConfig() {
+    model = locator<FaceMesh>();
+    handler = runFaceMesh;
   }
 }
