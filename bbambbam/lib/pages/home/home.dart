@@ -6,6 +6,7 @@ import 'package:bbambbam/pages/driving/driving.dart';
 import 'package:bbambbam/pages/report/report.dart';
 import 'package:bbambbam/pages/home/sidetap/sidetap.dart';
 
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -72,12 +73,7 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment(0, 0.15), // 이 값을 조절하여 위치를 정확히 조정하세요.
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Driving()),
-                );
-              },
+              onTap: () => _onTapCamera(context),
               child: Image.asset(
                 'assets/images/handle.png',
                 width: 300,
@@ -132,3 +128,11 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+void _onTapCamera(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const Driving()),
+  );
+}
+
