@@ -63,6 +63,26 @@ class _DrivingState extends State<Driving> {
         _cameraLensDirection,
       );
       _customPaint = CustomPaint(painter: painter);
+
+      // 눈 좌표
+      for (final mesh in meshes){
+        List<FaceMeshPoint>? leftEyePoints = mesh.contours[FaceMeshContourType.leftEye];
+        List<FaceMeshPoint>? rightEyePoints = mesh.contours[FaceMeshContourType.rightEye];
+
+        if (leftEyePoints != null){
+          print("Left Eye Points:");
+          for (var point in leftEyePoints){
+            print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
+          }
+        }
+
+        if (rightEyePoints != null){
+          print("Right Eye Points:");
+          for (var point in rightEyePoints){
+            print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
+          }
+        }
+      }
     } else {
       String text = 'Face meshes found: ${meshes.length}\n\n';
       for (final mesh in meshes){
