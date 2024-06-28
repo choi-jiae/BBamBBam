@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
 import 'detector_view.dart';
 import 'painters/face_mesh_detector_painter.dart';
+import 'dart:math';
 
 
 class Driving extends StatefulWidget {
@@ -46,6 +47,13 @@ class _DrivingState extends State<Driving> {
     );
   }
 
+// 두 점 사이의 거리 계산
+  num euclideanDistance(num x1, num y1, num x2, num y2){
+    var point1 = Point(x1, y1);
+    var point2 = Point(x2, y2);
+    return point1.distanceTo(point2);
+  }
+
   Future<void> _processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
@@ -64,22 +72,57 @@ class _DrivingState extends State<Driving> {
       );
       _customPaint = CustomPaint(painter: painter);
 
+      var leftEAR;
+      var rightEAR;
+
+      
       // 눈 좌표
       for (final mesh in meshes){
         List<FaceMeshPoint>? leftEyePoints = mesh.contours[FaceMeshContourType.leftEye];
         List<FaceMeshPoint>? rightEyePoints = mesh.contours[FaceMeshContourType.rightEye];
 
         if (leftEyePoints != null){
-          print("Left Eye Points:");
-          for (var point in leftEyePoints){
-            print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
-          }
+          //print("Left Eye Points:");
+          // for (var point in leftEyePoints){
+          //   print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
+          // }
+          // print("Index: ${leftEyePoints[3].index}, X: ${leftEyePoints[3].x}, Y: ${leftEyePoints[3].y}");
+          // print("Index: ${leftEyePoints[13].index}, X: ${leftEyePoints[13].x}, Y: ${leftEyePoints[13].y}");
+          // print("Index: ${leftEyePoints[5].index}, X: ${leftEyePoints[5].x}, Y: ${leftEyePoints[5].y}");
+          // print("Index: ${leftEyePoints[11].index}, X: ${leftEyePoints[11].x}, Y: ${leftEyePoints[11].y}");
+          // print("Index: ${leftEyePoints[0].index}, X: ${leftEyePoints[0].x}, Y: ${leftEyePoints[0].y}");
+          // print("Index: ${leftEyePoints[8].index}, X: ${leftEyePoints[8].x}, Y: ${leftEyePoints[8].y}");
+
+        // 계산식 약간 다름(ear 식 참고)
+          var leftEar1 = euclideanDistance(leftEyePoints[3].x, leftEyePoints[3].y, leftEyePoints[13].x, leftEyePoints[13].y);
+          var leftEar2 = euclideanDistance(leftEyePoints[5].x, leftEyePoints[5].y, leftEyePoints[11].x, leftEyePoints[11].y);
+          var leftEar3 = euclideanDistance(leftEyePoints[0].x, leftEyePoints[0].y, leftEyePoints[8].x, leftEyePoints[8].y);
+
+          leftEAR = (leftEar1 + leftEar2) / (2.0 * leftEar3);
         }
 
         if (rightEyePoints != null){
-          print("Right Eye Points:");
-          for (var point in rightEyePoints){
-            print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
+          //print("Right Eye Points:");
+          // print("Index: ${rightEyePoints[3].index}, X: ${rightEyePoints[3].x}, Y: ${rightEyePoints[3].y}");
+          // print("Index: ${rightEyePoints[13].index}, X: ${rightEyePoints[13].x}, Y: ${rightEyePoints[13].y}");
+          // print("Index: ${rightEyePoints[5].index}, X: ${rightEyePoints[5].x}, Y: ${rightEyePoints[5].y}");
+          // print("Index: ${rightEyePoints[11].index}, X: ${rightEyePoints[11].x}, Y: ${rightEyePoints[11].y}");
+          // print("Index: ${rightEyePoints[0].index}, X: ${rightEyePoints[0].x}, Y: ${rightEyePoints[0].y}");
+          // print("Index: ${rightEyePoints[8].index}, X: ${rightEyePoints[8].x}, Y: ${rightEyePoints[8].y}");
+
+          var rightEar1 = euclideanDistance(rightEyePoints[3].x, rightEyePoints[3].y, rightEyePoints[13].x, rightEyePoints[13].y);
+          var rightEar2 = euclideanDistance(rightEyePoints[5].x, rightEyePoints[5].y, rightEyePoints[11].x, rightEyePoints[11].y);
+          var rightEar3 = euclideanDistance(rightEyePoints[0].x, rightEyePoints[0].y, rightEyePoints[8].x, rightEyePoints[8].y);
+
+          rightEAR = (rightEar1 + rightEar2) / (2.0 * rightEar3);
+        }
+
+      
+        // 눈 감김 여부 판단
+        if (leftEAR != null && rightEAR != null){
+          var ear = (leftEAR + rightEAR) / 2.0;
+          if (ear < 0.2){
+            print("Eyes are closed");
           }
         }
       }
