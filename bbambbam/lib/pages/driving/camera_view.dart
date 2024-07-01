@@ -32,6 +32,7 @@ class _CameraViewState extends State<CameraView> {
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
+  int startModel = 0;
   bool _changingCameraLens = false;
 
   @override
@@ -54,6 +55,7 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
+    // setState(() {});
   }
 
   @override
@@ -85,6 +87,20 @@ class _CameraViewState extends State<CameraView> {
                     _controller!,
                     child: widget.customPaint,
                   ),
+          ),
+          Positioned(
+            bottom: 50,
+            right: 20,
+            child: ElevatedButton(
+              onPressed: () => {
+                setState(() {
+                  // startModel = 1;
+                  // _startLiveFeed();
+                  _startImageStreamIfRequired();
+                })
+              },
+              child: Text('START'),
+            ),
           ),
           _backButton(),
           _switchLiveCameraToggle(),
@@ -181,6 +197,18 @@ class _CameraViewState extends State<CameraView> {
         ),
       );
 
+  Future _startImageStreamIfRequired() async {
+    _controller?.startImageStream(_processCameraImage).then((value) {
+      if (widget.onCameraFeedReady != null) {
+        widget.onCameraFeedReady!();
+      }
+      if (widget.onCameraLensDirectionChanged != null) {
+        widget.onCameraLensDirectionChanged!(
+            _cameras[_cameraIndex].lensDirection);
+      }
+    });
+  }
+
   Future _startLiveFeed() async {
     final camera = _cameras[_cameraIndex];
     _controller = CameraController(
@@ -196,6 +224,7 @@ class _CameraViewState extends State<CameraView> {
       if (!mounted) {
         return;
       }
+      // setState(() {});
       _currentExposureOffset = 0.0;
       _controller?.getMinExposureOffset().then((value) {
         _minAvailableExposureOffset = value;
@@ -203,14 +232,21 @@ class _CameraViewState extends State<CameraView> {
       _controller?.getMaxExposureOffset().then((value) {
         _maxAvailableExposureOffset = value;
       });
-      _controller?.startImageStream(_processCameraImage).then((value) {
-        if (widget.onCameraFeedReady != null) {
-          widget.onCameraFeedReady!();
-        }
-        if (widget.onCameraLensDirectionChanged != null) {
-          widget.onCameraLensDirectionChanged!(camera.lensDirection);
-        }
-      });
+
+      // if (startModel == 1) {
+      //   print("hi!!!");
+      //   _controller?.startImageStream(_processCameraImage).then((value) {
+      //     if (widget.onCameraFeedReady != null) {
+      //       widget.onCameraFeedReady!();
+      //     }
+      //     if (widget.onCameraLensDirectionChanged != null) {
+      //       widget.onCameraLensDirectionChanged!(camera.lensDirection);
+      //     }
+      //   });
+      // } else {
+      //   print("hi...");
+      // }
+
       setState(() {});
     });
   }
