@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'firebase_options.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final routes = {
   "/": (context) => const landing(),
@@ -25,7 +26,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const MyApp());
 }
 
@@ -37,18 +37,24 @@ class MyApp extends StatelessWidget {
     final shortcuts = Map.of(WidgetsApp.defaultShortcuts);
     shortcuts[LogicalKeySet(LogicalKeyboardKey.space)] = ActivateIntent();
 
-    return MaterialApp(
-      shortcuts: kIsWeb ? shortcuts : null,
-      //scrollBehavior: MyCustomScrollBehavior(),
+    return ScreenUtilInit(
+      builder: (context, _) =>  MaterialApp(
+        debugShowCheckedModeBanner: false,
 
-      title: 'BBAM BBAM',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      routes: routes,
-    );
+        shortcuts: kIsWeb ? shortcuts : null,
+        //scrollBehavior: MyCustomScrollBehavior(),
+
+        title: 'BBAM BBAM',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        //home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        routes: routes,
+      )
+    ); 
+    
+   
   }
 }
 
