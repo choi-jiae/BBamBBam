@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 // google ml kit
 import 'dart:io';
@@ -24,6 +25,9 @@ class _DrivingState extends State<Driving> {
     FaceMeshDetector(option: FaceMeshDetectorOptions.faceMesh);
   bool _canProcess = true;
   bool _isBusy = false;
+  int _sleepCount = 0;
+  String _sleepTimes = '';
+  DateTime? _eyesClosedStartTime;
   CustomPaint? _customPaint;
   String? _text;
   var _cameraLensDirection = CameraLensDirection.front;
@@ -82,16 +86,6 @@ class _DrivingState extends State<Driving> {
         List<FaceMeshPoint>? rightEyePoints = mesh.contours[FaceMeshContourType.rightEye];
 
         if (leftEyePoints != null){
-          //print("Left Eye Points:");
-          // for (var point in leftEyePoints){
-          //   print("Index: ${point.index}, X: ${point.x}, Y: ${point.y}");
-          // }
-          // print("Index: ${leftEyePoints[3].index}, X: ${leftEyePoints[3].x}, Y: ${leftEyePoints[3].y}");
-          // print("Index: ${leftEyePoints[13].index}, X: ${leftEyePoints[13].x}, Y: ${leftEyePoints[13].y}");
-          // print("Index: ${leftEyePoints[5].index}, X: ${leftEyePoints[5].x}, Y: ${leftEyePoints[5].y}");
-          // print("Index: ${leftEyePoints[11].index}, X: ${leftEyePoints[11].x}, Y: ${leftEyePoints[11].y}");
-          // print("Index: ${leftEyePoints[0].index}, X: ${leftEyePoints[0].x}, Y: ${leftEyePoints[0].y}");
-          // print("Index: ${leftEyePoints[8].index}, X: ${leftEyePoints[8].x}, Y: ${leftEyePoints[8].y}");
 
         // 계산식 약간 다름(ear 식 참고)
           var leftEar1 = euclideanDistance(leftEyePoints[3].x, leftEyePoints[3].y, leftEyePoints[13].x, leftEyePoints[13].y);
@@ -102,14 +96,6 @@ class _DrivingState extends State<Driving> {
         }
 
         if (rightEyePoints != null){
-          //print("Right Eye Points:");
-          // print("Index: ${rightEyePoints[3].index}, X: ${rightEyePoints[3].x}, Y: ${rightEyePoints[3].y}");
-          // print("Index: ${rightEyePoints[13].index}, X: ${rightEyePoints[13].x}, Y: ${rightEyePoints[13].y}");
-          // print("Index: ${rightEyePoints[5].index}, X: ${rightEyePoints[5].x}, Y: ${rightEyePoints[5].y}");
-          // print("Index: ${rightEyePoints[11].index}, X: ${rightEyePoints[11].x}, Y: ${rightEyePoints[11].y}");
-          // print("Index: ${rightEyePoints[0].index}, X: ${rightEyePoints[0].x}, Y: ${rightEyePoints[0].y}");
-          // print("Index: ${rightEyePoints[8].index}, X: ${rightEyePoints[8].x}, Y: ${rightEyePoints[8].y}");
-
           var rightEar1 = euclideanDistance(rightEyePoints[3].x, rightEyePoints[3].y, rightEyePoints[13].x, rightEyePoints[13].y);
           var rightEar2 = euclideanDistance(rightEyePoints[5].x, rightEyePoints[5].y, rightEyePoints[11].x, rightEyePoints[11].y);
           var rightEar3 = euclideanDistance(rightEyePoints[0].x, rightEyePoints[0].y, rightEyePoints[8].x, rightEyePoints[8].y);
@@ -123,7 +109,26 @@ class _DrivingState extends State<Driving> {
           var ear = (leftEAR + rightEAR) / 2.0;
           if (ear < 0.2){
             print("Eyes are closed");
+            _eyesClosedStartTime ??= DateTime.now();
+            
+          } else{
+            print("Eyes are open");
+            _eyesClosedStartTime = null;
+            
           }
+        }
+      }
+
+      if (_eyesClosedStartTime != null){
+        var nowTime = DateTime.now();
+        var duration = nowTime.difference(_eyesClosedStartTime!);
+        if (duration.inSeconds > 0.5){
+          print("졸음 운전 감지");
+          _eyesClosedStartTime = null;
+          _sleepCount += 1;
+          _sleepTimes += '${DateFormat('HH:mm:ss').format(nowTime)},';
+          print(_sleepCount);
+          print(_sleepTimes);
         }
       }
     } else {

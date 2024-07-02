@@ -45,6 +45,7 @@ dependencies:
   flutter_screenutil:
   equatable:
   image: ^3.0.2
+  intl:
 
   get_it: ^7.6.7
 
