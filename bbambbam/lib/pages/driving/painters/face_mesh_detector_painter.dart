@@ -65,35 +65,34 @@ class FaceMeshDetectorPainter extends CustomPainter {
         paint1,
       );
 
-    // 여기에서 개폐여부 계산 가능할 듯
-      void paintTriangle(FaceMeshTriangle triangle) {
-        final List<Offset> cornerPoints = <Offset>[];
-        for (final point in triangle.points) {
-          final double x = translateX(
-            point.x.toDouble(),
-            size,
-            imageSize,
-            rotation,
-            cameraLensDirection,
-          );
-          final double y = translateY(
-            point.y.toDouble(),
-            size,
-            imageSize,
-            rotation,
-            cameraLensDirection,
-          );
+      // void paintTriangle(FaceMeshTriangle triangle) {
+      //   final List<Offset> cornerPoints = <Offset>[];
+      //   for (final point in triangle.points) {
+      //     final double x = translateX(
+      //       point.x.toDouble(),
+      //       size,
+      //       imageSize,
+      //       rotation,
+      //       cameraLensDirection,
+      //     );
+      //     final double y = translateY(
+      //       point.y.toDouble(),
+      //       size,
+      //       imageSize,
+      //       rotation,
+      //       cameraLensDirection,
+      //     );
 
-          cornerPoints.add(Offset(x, y));
-        }
-        // Add the first point to close the polygon
-        cornerPoints.add(cornerPoints.first);
-        canvas.drawPoints(PointMode.polygon, cornerPoints, paint2);
-      }
+      //     cornerPoints.add(Offset(x, y));
+      //   }
+      //   // Add the first point to close the polygon
+      //   cornerPoints.add(cornerPoints.first);
+      //   canvas.drawPoints(PointMode.polygon, cornerPoints, paint2);
+      // }
 
-      for (final triangle in mesh.triangles) {
-        paintTriangle(triangle);
-      }
+      // for (final triangle in mesh.triangles) {
+      //   paintTriangle(triangle);
+      // }
     }
   }
 
