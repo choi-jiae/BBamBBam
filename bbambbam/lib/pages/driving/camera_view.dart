@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -27,6 +28,8 @@ class CameraView extends StatefulWidget {
 
 class _CameraViewState extends State<CameraView> {
   final CarouselController _carouselController = CarouselController();
+  Timer? _timer;
+  int _seconds = 0;
   static List<CameraDescription> _cameras = [];
   CameraController? _controller;
   int _cameraIndex = -1;
@@ -69,6 +72,20 @@ class _CameraViewState extends State<CameraView> {
     // setState(() {});
   }
 
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        _seconds++;
+      });
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final int minutes = seconds ~/ 60;
+    final int remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   void dispose() {
     _stopLiveFeed();
@@ -78,7 +95,100 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     // _showPopupDialog();
-    return Scaffold(body: _liveFeedBody());
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text("BBAMI")),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.cameraswitch),
+            onPressed: () {
+              _switchLiveCamera();
+            },
+          ),
+        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Back button logic
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          _liveFeedBody(),
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Container(
+              width: 150,
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                    child: Row(children: [
+                  IconButton(
+                    icon: const Text('🚗', style: TextStyle(fontSize: 24)),
+                    onPressed: () {
+                      // Toggle camera logic
+                    },
+                  ), // 운전대 이모티콘 사용
+                  Text(
+                    _formatTime(_seconds),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ])
+                    // Text(
+                    //   _formatTime(_seconds),
+                    //   style: const TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 24,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    ),
+              ),
+            ),
+          )
+
+          // Positioned(
+          //   top: 32,
+          //   left: 16,
+          //   child: Text(
+          //     _formatTime(_seconds),
+          //     style: const TextStyle(
+          //       color: Colors.white,
+          //       fontSize: 24,
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //   ),
+          // ),
+        ],
+      ),
+    );
+    // Scaffold(
+    //     body: Stack(children: [
+    //   _liveFeedBody(),
+    //   Positioned(
+    //     top: 16,
+    //     left: 16,
+    //     child: Text(
+    //       _formatTime(_seconds),
+    //       style: const TextStyle(
+    //         color: Colors.white,
+    //         fontSize: 24,
+    //         fontWeight: FontWeight.bold,
+    //       ),
+    //     ),
+    //   ),
+    // ]));
   }
 
   Widget _liveFeedBody() {
@@ -100,21 +210,7 @@ class _CameraViewState extends State<CameraView> {
                     child: widget.customPaint,
                   ),
           ),
-          // Center(
-          //   // bottom: 50,
-          //   // right: 20,
-          //   child: ElevatedButton(
-          //     onPressed: () => {
-          //       setState(() {
-          //         // startModel = 1;
-          //         // _startLiveFeed();
-          //         _startImageStreamIfRequired();
-          //       })
-          //     },
-          //     child: const Text('START'),
-          //   ),
-          // ),
-          _backButton(),
+          // _backButton(),
           _switchLiveCameraToggle(),
           _exposureControl(),
         ],
@@ -349,6 +445,7 @@ class _CameraViewState extends State<CameraView> {
               child: const Text('START'),
               onPressed: () {
                 Navigator.of(context).pop();
+                _startTimer();
                 _startImageStreamIfRequired();
               },
             )),
