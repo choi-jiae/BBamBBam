@@ -42,6 +42,7 @@ class _CameraViewState extends State<CameraView> {
   bool _changingCameraLens = false;
   late DrivingRecord drivingRecordProvider;
   late int _sleepCount;
+  bool _isPaused = false;
 
   @override
   void initState() {
@@ -92,6 +93,18 @@ class _CameraViewState extends State<CameraView> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  void _togglePause() {
+    print('pause');
+    setState(() {
+      _isPaused = !_isPaused;
+      if (_isPaused) {
+        _timer?.cancel();
+      } else {
+        _startTimer();
+      }
+    });
+  }
+
   @override
   void dispose() {
     _stopLiveFeed();
@@ -138,22 +151,6 @@ class _CameraViewState extends State<CameraView> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
-                  //     child: Row(children: [
-                  //   IconButton(
-                  //     icon: const Text('🚗', style: TextStyle(fontSize: 24)),
-                  //     onPressed: () {
-                  //       // Toggle camera logic
-                  //     },
-                  //   ), // 운전대 이모티콘 사용
-                  //   Text(
-                  //     formatTime(_seconds),
-                  //     style: const TextStyle(
-                  //       color: Colors.white,
-                  //       fontSize: 24,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),
-                  // ])
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -185,12 +182,16 @@ class _CameraViewState extends State<CameraView> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 20), // 버튼과 텍스트 간격 조절
+                      ElevatedButton(
+                          onPressed: _togglePause,
+                          child: Text(_isPaused ? 'RESTART' : 'STOP')),
                     ],
                   ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
