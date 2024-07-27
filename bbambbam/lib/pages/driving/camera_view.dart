@@ -39,13 +39,6 @@ class _CameraViewState extends State<CameraView> {
   int startModel = 0;
   bool _changingCameraLens = false;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   _initialize();
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -69,7 +62,6 @@ class _CameraViewState extends State<CameraView> {
     if (_cameraIndex != -1) {
       _startLiveFeed();
     }
-    // setState(() {});
   }
 
   void _startTimer() {
@@ -80,10 +72,12 @@ class _CameraViewState extends State<CameraView> {
     });
   }
 
-  String _formatTime(int seconds) {
-    final int minutes = seconds ~/ 60;
+  String formatTime(int seconds) {
+    final int hours = seconds ~/ 3600;
+    final int minutes = (seconds % 3600) ~/ 60;
     final int remainingSeconds = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   @override
@@ -94,7 +88,6 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    // _showPopupDialog();
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("BBAMI")),
@@ -121,7 +114,7 @@ class _CameraViewState extends State<CameraView> {
             top: 40,
             left: 16,
             child: Container(
-              width: 150,
+              width: 200,
               decoration: BoxDecoration(
                 color: Colors.black54,
                 borderRadius: BorderRadius.circular(10.0),
@@ -137,58 +130,20 @@ class _CameraViewState extends State<CameraView> {
                     },
                   ), // 운전대 이모티콘 사용
                   Text(
-                    _formatTime(_seconds),
+                    formatTime(_seconds),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ])
-                    // Text(
-                    //   _formatTime(_seconds),
-                    //   style: const TextStyle(
-                    //     color: Colors.white,
-                    //     fontSize: 24,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    ),
+                ])),
               ),
             ),
           )
-
-          // Positioned(
-          //   top: 32,
-          //   left: 16,
-          //   child: Text(
-          //     _formatTime(_seconds),
-          //     style: const TextStyle(
-          //       color: Colors.white,
-          //       fontSize: 24,
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
-    // Scaffold(
-    //     body: Stack(children: [
-    //   _liveFeedBody(),
-    //   Positioned(
-    //     top: 16,
-    //     left: 16,
-    //     child: Text(
-    //       _formatTime(_seconds),
-    //       style: const TextStyle(
-    //         color: Colors.white,
-    //         fontSize: 24,
-    //         fontWeight: FontWeight.bold,
-    //       ),
-    //     ),
-    //   ),
-    // ]));
   }
 
   Widget _liveFeedBody() {
@@ -211,7 +166,7 @@ class _CameraViewState extends State<CameraView> {
                   ),
           ),
           // _backButton(),
-          _switchLiveCameraToggle(),
+          // _switchLiveCameraToggle(),
           _exposureControl(),
         ],
       ),
@@ -340,20 +295,14 @@ class _CameraViewState extends State<CameraView> {
       _controller?.getMaxExposureOffset().then((value) {
         _maxAvailableExposureOffset = value;
       });
-
-      // if (startModel == 1) {
-      //   print("hi!!!");
-      //   _controller?.startImageStream(_processCameraImage).then((value) {
-      //     if (widget.onCameraFeedReady != null) {
-      //       widget.onCameraFeedReady!();
-      //     }
-      //     if (widget.onCameraLensDirectionChanged != null) {
-      //       widget.onCameraLensDirectionChanged!(camera.lensDirection);
-      //     }
-      //   });
-      // } else {
-      //   print("hi...");
-      // }
+      _controller?.startImageStream(_processCameraImage).then((value) {
+        if (widget.onCameraFeedReady != null) {
+          widget.onCameraFeedReady!();
+        }
+        if (widget.onCameraLensDirectionChanged != null) {
+          widget.onCameraLensDirectionChanged!(camera.lensDirection);
+        }
+      });
 
       setState(() {});
     });
