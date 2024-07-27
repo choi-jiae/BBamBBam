@@ -1,19 +1,20 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 
 class CameraView extends StatefulWidget {
-  CameraView(
-      {Key? key,
+  const CameraView(
+      {super.key,
       required this.customPaint,
       required this.onImage,
       this.onCameraFeedReady,
       this.onCameraLensDirectionChanged,
-      this.initialCameraLensDirection = CameraLensDirection.back})
-      : super(key: key);
+      this.initialCameraLensDirection = CameraLensDirection.back});
 
   final CustomPaint? customPaint;
   final Function(InputImage inputImage) onImage;
@@ -26,19 +27,26 @@ class CameraView extends StatefulWidget {
 }
 
 class _CameraViewState extends State<CameraView> {
+  final CarouselController _carouselController = CarouselController();
+  Timer? _timer;
+  int _seconds = 0;
   static List<CameraDescription> _cameras = [];
   CameraController? _controller;
   int _cameraIndex = -1;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
+  int startModel = 0;
   bool _changingCameraLens = false;
 
   @override
   void initState() {
     super.initState();
-
     _initialize();
+    // 첫 번째 프레임 렌더링 후에 팝업 다이얼로그 표시
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showPopupDialog();
+    });
   }
 
   void _initialize() async {
@@ -56,6 +64,22 @@ class _CameraViewState extends State<CameraView> {
     }
   }
 
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        _seconds++;
+      });
+    });
+  }
+
+  String formatTime(int seconds) {
+    final int hours = seconds ~/ 3600;
+    final int minutes = (seconds % 3600) ~/ 60;
+    final int remainingSeconds = seconds % 60;
+
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   void dispose() {
     _stopLiveFeed();
@@ -64,7 +88,62 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: _liveFeedBody());
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text("BBAMI")),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.cameraswitch),
+            onPressed: () {
+              _switchLiveCamera();
+            },
+          ),
+        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Back button logic
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          _liveFeedBody(),
+          Positioned(
+            top: 40,
+            left: 16,
+            child: Container(
+              width: 200,
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                    child: Row(children: [
+                  IconButton(
+                    icon: const Text('🚗', style: TextStyle(fontSize: 24)),
+                    onPressed: () {
+                      // Toggle camera logic
+                    },
+                  ), // 운전대 이모티콘 사용
+                  Text(
+                    formatTime(_seconds),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ])),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget _liveFeedBody() {
@@ -78,16 +157,16 @@ class _CameraViewState extends State<CameraView> {
         children: <Widget>[
           Center(
             child: _changingCameraLens
-                ? Center(
-                    child: const Text('Changing camera lens'),
+                ? const Center(
+                    child: Text('Changing camera lens'),
                   )
                 : CameraPreview(
                     _controller!,
                     child: widget.customPaint,
                   ),
           ),
-          _backButton(),
-          _switchLiveCameraToggle(),
+          // _backButton(),
+          // _switchLiveCameraToggle(),
           _exposureControl(),
         ],
       ),
@@ -104,7 +183,7 @@ class _CameraViewState extends State<CameraView> {
             heroTag: Object(),
             onPressed: () => Navigator.of(context).pop(),
             backgroundColor: Colors.black54,
-            child: Icon(
+            child: const Icon(
               Icons.arrow_back_ios_outlined,
               size: 20,
             ),
@@ -136,7 +215,7 @@ class _CameraViewState extends State<CameraView> {
         top: 40,
         right: 8,
         child: ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: const BoxConstraints(
             maxHeight: 250,
           ),
           child: Column(children: [
@@ -151,7 +230,7 @@ class _CameraViewState extends State<CameraView> {
                 child: Center(
                   child: Text(
                     '${_currentExposureOffset.toStringAsFixed(1)}x',
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -181,6 +260,18 @@ class _CameraViewState extends State<CameraView> {
         ),
       );
 
+  Future _startImageStreamIfRequired() async {
+    _controller?.startImageStream(_processCameraImage).then((value) {
+      if (widget.onCameraFeedReady != null) {
+        widget.onCameraFeedReady!();
+      }
+      if (widget.onCameraLensDirectionChanged != null) {
+        widget.onCameraLensDirectionChanged!(
+            _cameras[_cameraIndex].lensDirection);
+      }
+    });
+  }
+
   Future _startLiveFeed() async {
     final camera = _cameras[_cameraIndex];
     _controller = CameraController(
@@ -196,6 +287,7 @@ class _CameraViewState extends State<CameraView> {
       if (!mounted) {
         return;
       }
+      // setState(() {});
       _currentExposureOffset = 0.0;
       _controller?.getMinExposureOffset().then((value) {
         _minAvailableExposureOffset = value;
@@ -211,8 +303,105 @@ class _CameraViewState extends State<CameraView> {
           widget.onCameraLensDirectionChanged!(camera.lensDirection);
         }
       });
+
       setState(() {});
     });
+  }
+
+  void _showPopupDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: Stack(
+              children: [
+                CarouselSlider(
+                  carouselController: _carouselController,
+                  options: CarouselOptions(
+                    height: 400.0,
+                    enableInfiniteScroll: false,
+                    autoPlay: false,
+                    viewportFraction: 0.9,
+                  ),
+                  items: [
+                    {
+                      'image': 'assets/images/driver.png',
+                      'text': '정면을 바라봐주세요\n눈이 인식되지 않는 모습은 자제해주세요'
+                    },
+                    {
+                      'image': 'assets/images/stop.png',
+                      'text': '화면에 얼굴이 비출 수 없는 경우에는 일시정지 버튼을 눌러주세요'
+                    },
+                    {
+                      'image': 'assets/images/people.png',
+                      'text': '한 화면에 여러 사람의 얼굴이 나오면 졸음 운전 탐지가 어려워요'
+                    },
+                  ].asMap().entries.map((entry) {
+                    int index = entry.key;
+                    var item = entry.value;
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return ClipRect(
+                            child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 8.0), // 텍스트 아래에 8픽셀 패딩 추가
+                              child: Text(
+                                '${index + 1} / 3',
+                                style: const TextStyle(fontSize: 16.0),
+                              ),
+                            ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  8.0), // 선택사항: 이미지의 모서리를 둥글게 처리
+                              child: Image.asset(
+                                item['image']!,
+                                width: 170,
+                                height: 170,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const Spacer(), // 이미지 아래 빈 공간 추가
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0), // 양옆에 16픽셀 패딩 추가
+                              child: Text(
+                                item['text']!,
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.bold, // 텍스트를 굵게 설정
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const Spacer(), // 텍스트 아래 빈 공간 추가
+                          ],
+                        ));
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Center(
+                child: TextButton(
+              child: const Text('START'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _startTimer();
+                _startImageStreamIfRequired();
+              },
+            )),
+          ],
+        );
+      },
+    );
   }
 
   Future _stopLiveFeed() async {

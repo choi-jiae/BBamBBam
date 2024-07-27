@@ -31,7 +31,6 @@ class _DrivingState extends State<Driving> {
     'total': '00:00:00',
     'warning': false,
   };
-
   final FaceMeshDetector _meshDetector =
       FaceMeshDetector(option: FaceMeshDetectorOptions.faceMesh);
   bool _canProcess = true;
