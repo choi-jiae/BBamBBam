@@ -4,11 +4,13 @@ import 'package:bbambbam/landing.dart';
 import 'package:bbambbam/pages/auth/login.dart';
 import 'package:bbambbam/pages/home/sidetap/mypage.dart';
 import 'package:bbambbam/pages/home/sidetap/qna.dart';
+import 'package:bbambbam/providers/driving_record_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -26,8 +28,26 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DrivingRecord()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
+// void main() {
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => DrivingRecord()),
+//       ],
+//       child: MyApp(),
+//     ),
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -35,26 +55,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final shortcuts = Map.of(WidgetsApp.defaultShortcuts);
-    shortcuts[LogicalKeySet(LogicalKeyboardKey.space)] = ActivateIntent();
+    shortcuts[LogicalKeySet(LogicalKeyboardKey.space)] = const ActivateIntent();
 
     return ScreenUtilInit(
-      builder: (context, _) =>  MaterialApp(
-        debugShowCheckedModeBanner: false,
+        builder: (context, _) => MaterialApp(
+              debugShowCheckedModeBanner: false,
 
-        shortcuts: kIsWeb ? shortcuts : null,
-        //scrollBehavior: MyCustomScrollBehavior(),
+              shortcuts: kIsWeb ? shortcuts : null,
+              //scrollBehavior: MyCustomScrollBehavior(),
 
-        title: 'BBAM BBAM',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        //home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        routes: routes,
-      )
-    ); 
-    
-   
+              title: 'BBAM BBAM',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                useMaterial3: true,
+              ),
+              //home: const MyHomePage(title: 'Flutter Demo Home Page'),
+              routes: routes,
+            ));
   }
 }
 
