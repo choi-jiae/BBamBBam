@@ -47,6 +47,7 @@ class _DrivingState extends State<Driving> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final drivingRecordProvider =
           Provider.of<DrivingRecord>(context, listen: false);
+      drivingRecordProvider.reset();
       drivingRecordProvider.updateField('date', formattedDate);
       _drivingRecord = drivingRecordProvider.drivingRecord;
     });
