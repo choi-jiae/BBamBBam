@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bbambbam/providers/driving_record_provider.dart';
 import 'package:camera/camera.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:provider/provider.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView(
@@ -38,6 +40,7 @@ class _CameraViewState extends State<CameraView> {
   double _currentExposureOffset = 0.0;
   int startModel = 0;
   bool _changingCameraLens = false;
+  late DrivingRecord drivingRecordProvider;
 
   @override
   void initState() {
@@ -46,6 +49,8 @@ class _CameraViewState extends State<CameraView> {
     // 첫 번째 프레임 렌더링 후에 팝업 다이얼로그 표시
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showPopupDialog();
+      drivingRecordProvider =
+          Provider.of<DrivingRecord>(context, listen: false);
     });
   }
 
@@ -83,6 +88,8 @@ class _CameraViewState extends State<CameraView> {
   @override
   void dispose() {
     _stopLiveFeed();
+    String formattedTime = formatTime(_seconds);
+    drivingRecordProvider.updateField('total', formattedTime);
     super.dispose();
   }
 

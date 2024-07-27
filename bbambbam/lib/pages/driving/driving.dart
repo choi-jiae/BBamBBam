@@ -1,14 +1,13 @@
+import 'package:bbambbam/providers/driving_record_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:audioplayers/audioplayers.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-
-// google ml kit
 import 'dart:io';
 import 'package:google_mlkit_face_mesh_detection/google_mlkit_face_mesh_detection.dart';
+import 'package:provider/provider.dart';
 import 'detector_view.dart';
 import 'painters/face_mesh_detector_painter.dart';
 import 'dart:math';
@@ -24,13 +23,6 @@ class _DrivingState extends State<Driving> {
   late String uid;
   late DateTime nowDate;
   late String formattedDate;
-  Map<String, dynamic> drivingRecord = {
-    'date': '2023-10-12',
-    'count': 0, // 운전 횟수
-    'timestamp': [], // 운전 시간 (분)
-    'total': '00:00:00',
-    'warning': false,
-  };
   final FaceMeshDetector _meshDetector =
       FaceMeshDetector(option: FaceMeshDetectorOptions.faceMesh);
   bool _canProcess = true;
@@ -43,48 +35,33 @@ class _DrivingState extends State<Driving> {
   bool _showImage = false;
   var _cameraLensDirection = CameraLensDirection.front;
 
+  late Map<String, dynamic> _drivingRecord;
+
   @override
   void initState() {
     super.initState();
     uid = FirebaseAuth.instance.currentUser!.uid;
     nowDate = DateTime.now();
     formattedDate = DateFormat('yyyy-MM-dd').format(nowDate);
-    drivingRecord['date'] = formattedDate;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final drivingRecordProvider =
+          Provider.of<DrivingRecord>(context, listen: false);
+      drivingRecordProvider.updateField('date', formattedDate);
+      _drivingRecord = drivingRecordProvider.drivingRecord;
+    });
   }
 
   @override
   void dispose() {
     _canProcess = false;
-    _handleDispose();
     _meshDetector.close();
+    _handleDispose();
     super.dispose();
   }
 
   Future<void> _handleDispose() async {
-    await addDrivingRecord(uid, drivingRecord);
-  }
-
-  @override
-  Widget build(BuildContext context){
-    return Stack(
-      children: [
-        DetectorView(
-          title: 'Face Mesh Detection',
-          customPaint: _customPaint,
-          text: _text,
-          onImage: _processImage,
-          initialCameraLensDirection: _cameraLensDirection,
-          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
-      ),
-      Visibility(
-        visible: _showImage,
-        
-        child: Center(
-          child: Image.asset('assets/images/bbam.png'),
-        ),
-      ),
-      ],
-    );
+    await addDrivingRecord(uid, _drivingRecord);
   }
 
   Future<void> addDrivingRecord(
@@ -104,15 +81,13 @@ class _DrivingState extends State<Driving> {
     }
   }
 
-// 두 점 사이의 거리 계산
   num euclideanDistance(num x1, num y1, num x2, num y2) {
     var point1 = Point(x1, y1);
     var point2 = Point(x2, y2);
     return point1.distanceTo(point2);
   }
-  
-  void _showBbami() async{
 
+  void _showBbami() async {
     setState(() {
       _showImage = true;
     });
@@ -129,7 +104,7 @@ class _DrivingState extends State<Driving> {
     final player = AudioPlayer();
     player.play(AssetSource(randomAudioFile));
 
-    Future.delayed(const Duration(seconds: 2), (){
+    Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _showImage = false;
       });
@@ -137,9 +112,11 @@ class _DrivingState extends State<Driving> {
   }
 
   void setDrivingRecord(List<String> timeStamp, num count) {
-    drivingRecord['timestamp'] = timeStamp;
-    drivingRecord['count'] = count;
-    drivingRecord['warning'] = true;
+    final drivingRecordProvider =
+        Provider.of<DrivingRecord>(context, listen: false);
+    drivingRecordProvider.updateField('timestamp', timeStamp);
+    drivingRecordProvider.updateField('count', count);
+    drivingRecordProvider.updateField('warning', true);
   }
 
   Future<void> _processImage(InputImage inputImage) async {
@@ -163,7 +140,6 @@ class _DrivingState extends State<Driving> {
       double leftEAR = 0.0;
       double rightEAR = 0.0;
 
-      // 눈 좌표
       for (final mesh in meshes) {
         List<FaceMeshPoint>? leftEyePoints =
             mesh.contours[FaceMeshContourType.leftEye];
@@ -171,7 +147,6 @@ class _DrivingState extends State<Driving> {
             mesh.contours[FaceMeshContourType.rightEye];
 
         if (leftEyePoints != null) {
-          // 계산식 약간 다름(ear 식 참고)
           var leftEar1 = euclideanDistance(leftEyePoints[3].x,
               leftEyePoints[3].y, leftEyePoints[13].x, leftEyePoints[13].y);
           var leftEar2 = euclideanDistance(leftEyePoints[5].x,
@@ -193,7 +168,6 @@ class _DrivingState extends State<Driving> {
           rightEAR = (rightEar1 + rightEar2) / (2.0 * rightEar3);
         }
 
-        // 눈 감김 여부 판단
         var ear = (leftEAR + rightEAR) / 2.0;
         if (ear < 0.2) {
           _eyesClosedStartTime ??= DateTime.now();
@@ -223,12 +197,33 @@ class _DrivingState extends State<Driving> {
         text += 'face: ${mesh.boundingBox}\n\n';
       }
       _text = text;
-      // TODO: set _customPaint to draw boundingRect on top of image
       _customPaint = null;
     }
     _isBusy = false;
     if (mounted) {
       setState(() {});
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        DetectorView(
+          title: 'Face Mesh Detection',
+          customPaint: _customPaint,
+          text: _text,
+          onImage: _processImage,
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+        ),
+        Visibility(
+          visible: _showImage,
+          child: Center(
+            child: Image.asset('assets/images/bbam.png'),
+          ),
+        ),
+      ],
+    );
   }
 }
