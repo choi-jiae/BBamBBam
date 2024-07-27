@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 // google ml kit
 import 'dart:io';
@@ -19,31 +21,87 @@ class Driving extends StatefulWidget {
 }
 
 class _DrivingState extends State<Driving> {
+  late String uid;
+  late DateTime nowDate;
+  late String formattedDate;
+  Map<String, dynamic> drivingRecord = {
+    'date': '2023-10-12',
+    'count': 0, // 운전 횟수
+    'timestamp': [], // 운전 시간 (분)
+    'total': '00:00:00',
+    'warning': false,
+  };
   final FaceMeshDetector _meshDetector =
       FaceMeshDetector(option: FaceMeshDetectorOptions.faceMesh);
   bool _canProcess = true;
   bool _isBusy = false;
+  int _sleepCount = 0;
+  final List<String> _sleepTimes = [];
+  DateTime? _eyesClosedStartTime;
   CustomPaint? _customPaint;
   String? _text;
+  bool _showImage = false;
   var _cameraLensDirection = CameraLensDirection.front;
+
+  @override
+  void initState() {
+    super.initState();
+    uid = FirebaseAuth.instance.currentUser!.uid;
+    nowDate = DateTime.now();
+    formattedDate = DateFormat('yyyy-MM-dd').format(nowDate);
+    drivingRecord['date'] = formattedDate;
+  }
 
   @override
   void dispose() {
     _canProcess = false;
+    _handleDispose();
     _meshDetector.close();
     super.dispose();
   }
 
+  Future<void> _handleDispose() async {
+    await addDrivingRecord(uid, drivingRecord);
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return DetectorView(
-      title: 'Face Mesh Detection',
-      customPaint: _customPaint,
-      text: _text,
-      onImage: _processImage,
-      initialCameraLensDirection: _cameraLensDirection,
-      onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+  Widget build(BuildContext context){
+    return Stack(
+      children: [
+        DetectorView(
+          title: 'Face Mesh Detection',
+          customPaint: _customPaint,
+          text: _text,
+          onImage: _processImage,
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+      ),
+      Visibility(
+        visible: _showImage,
+        
+        child: Center(
+          child: Image.asset('assets/images/bbam.png'),
+        ),
+      ),
+      ],
     );
+  }
+
+  Future<void> addDrivingRecord(
+      String uid, Map<String, dynamic> drivingRecord) async {
+    try {
+      DocumentReference userReportRef =
+          FirebaseFirestore.instance.collection('Report').doc(uid);
+
+      await userReportRef.set({
+        'drivingRecords': FieldValue.arrayUnion([drivingRecord]),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      print('Driving record added for user: $uid');
+    } catch (e) {
+      print('Error adding driving record: $e');
+    }
   }
 
 // 두 점 사이의 거리 계산
@@ -51,6 +109,37 @@ class _DrivingState extends State<Driving> {
     var point1 = Point(x1, y1);
     var point2 = Point(x2, y2);
     return point1.distanceTo(point2);
+  }
+  
+  void _showBbami() async{
+
+    setState(() {
+      _showImage = true;
+    });
+
+    List<String> audioFiles = [
+      'data/get_up.mp3',
+      'data/fighting.mp3',
+      'data/open_your_eyes.mp3',
+    ];
+
+    final random = Random();
+    String randomAudioFile = audioFiles[random.nextInt(audioFiles.length)];
+
+    final player = AudioPlayer();
+    player.play(AssetSource(randomAudioFile));
+
+    Future.delayed(const Duration(seconds: 2), (){
+      setState(() {
+        _showImage = false;
+      });
+    });
+  }
+
+  void setDrivingRecord(List<String> timeStamp, num count) {
+    drivingRecord['timestamp'] = timeStamp;
+    drivingRecord['count'] = count;
+    drivingRecord['warning'] = true;
   }
 
   Future<void> _processImage(InputImage inputImage) async {
@@ -71,8 +160,8 @@ class _DrivingState extends State<Driving> {
       );
       _customPaint = CustomPaint(painter: painter);
 
-      var leftEAR;
-      var rightEAR;
+      double leftEAR = 0.0;
+      double rightEAR = 0.0;
 
       // 눈 좌표
       for (final mesh in meshes) {
@@ -105,11 +194,27 @@ class _DrivingState extends State<Driving> {
         }
 
         // 눈 감김 여부 판단
-        if (leftEAR != null && rightEAR != null) {
-          var ear = (leftEAR + rightEAR) / 2.0;
-          if (ear < 0.2) {
-            print("Eyes are closed");
-          }
+        var ear = (leftEAR + rightEAR) / 2.0;
+        if (ear < 0.2) {
+          _eyesClosedStartTime ??= DateTime.now();
+        } else {
+          _eyesClosedStartTime = null;
+        }
+      }
+
+      if (_eyesClosedStartTime != null) {
+        var nowTime = DateTime.now();
+        var duration = nowTime.difference(_eyesClosedStartTime!);
+
+        if (duration.inSeconds > 0.5) {
+          print("졸음 운전 감지");
+          _eyesClosedStartTime = null;
+          _sleepCount += 1;
+          _sleepTimes.add(DateFormat('HH:mm:ss').format(nowTime));
+          setDrivingRecord(_sleepTimes, _sleepCount);
+          print(_sleepCount);
+          print(_sleepTimes);
+          _showBbami();
         }
       }
     } else {
