@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,6 +41,7 @@ class _DrivingState extends State<Driving> {
   DateTime? _eyesClosedStartTime;
   CustomPaint? _customPaint;
   String? _text;
+  bool _showImage = false;
   var _cameraLensDirection = CameraLensDirection.front;
 
   @override
@@ -64,14 +66,25 @@ class _DrivingState extends State<Driving> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return DetectorView(
-      title: 'Face Mesh Detection',
-      customPaint: _customPaint,
-      text: _text,
-      onImage: _processImage,
-      initialCameraLensDirection: _cameraLensDirection,
-      onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+  Widget build(BuildContext context){
+    return Stack(
+      children: [
+        DetectorView(
+          title: 'Face Mesh Detection',
+          customPaint: _customPaint,
+          text: _text,
+          onImage: _processImage,
+          initialCameraLensDirection: _cameraLensDirection,
+          onCameraLensDirectionChanged: (value) => _cameraLensDirection = value,
+      ),
+      Visibility(
+        visible: _showImage,
+        
+        child: Center(
+          child: Image.asset('assets/images/bbam.png'),
+        ),
+      ),
+      ],
     );
   }
 
@@ -97,6 +110,31 @@ class _DrivingState extends State<Driving> {
     var point1 = Point(x1, y1);
     var point2 = Point(x2, y2);
     return point1.distanceTo(point2);
+  }
+  
+  void _showBbami() async{
+
+    setState(() {
+      _showImage = true;
+    });
+
+    List<String> audioFiles = [
+      'data/get_up.mp3',
+      'data/fighting.mp3',
+      'data/open_your_eyes.mp3',
+    ];
+
+    final random = Random();
+    String randomAudioFile = audioFiles[random.nextInt(audioFiles.length)];
+
+    final player = AudioPlayer();
+    player.play(AssetSource(randomAudioFile));
+
+    Future.delayed(const Duration(seconds: 2), (){
+      setState(() {
+        _showImage = false;
+      });
+    });
   }
 
   void setDrivingRecord(List<String> timeStamp, num count) {
@@ -168,6 +206,7 @@ class _DrivingState extends State<Driving> {
       if (_eyesClosedStartTime != null) {
         var nowTime = DateTime.now();
         var duration = nowTime.difference(_eyesClosedStartTime!);
+
         if (duration.inSeconds > 0.5) {
           print("졸음 운전 감지");
           _eyesClosedStartTime = null;
@@ -176,6 +215,7 @@ class _DrivingState extends State<Driving> {
           setDrivingRecord(_sleepTimes, _sleepCount);
           print(_sleepCount);
           print(_sleepTimes);
+          _showBbami();
         }
       }
     } else {
