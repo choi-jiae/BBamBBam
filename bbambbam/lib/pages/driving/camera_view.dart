@@ -51,9 +51,6 @@ class _CameraViewState extends State<CameraView> {
     // 첫 번째 프레임 렌더링 후에 팝업 다이얼로그 표시
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showPopupDialog();
-      // drivingRecordProvider =
-      //     Provider.of<DrivingRecord>(context, listen: false);
-      // _sleepCount = drivingRecordProvider.drivingRecord['count'];
       setState(() {
         drivingRecordProvider =
             Provider.of<DrivingRecord>(context, listen: false);
