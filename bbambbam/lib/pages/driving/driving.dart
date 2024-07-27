@@ -29,6 +29,7 @@ class _DrivingState extends State<Driving> {
     'count': 0, // 운전 횟수
     'timestamp': [], // 운전 시간 (분)
     'total': '00:00:00',
+    'warning': false,
   };
 
   final FaceMeshDetector _meshDetector =
@@ -84,7 +85,6 @@ class _DrivingState extends State<Driving> {
         ),
       ),
       ],
-
     );
   }
 
@@ -111,7 +111,7 @@ class _DrivingState extends State<Driving> {
     var point2 = Point(x2, y2);
     return point1.distanceTo(point2);
   }
-
+  
   void _showBbami() async{
 
     setState(() {
@@ -135,11 +135,12 @@ class _DrivingState extends State<Driving> {
         _showImage = false;
       });
     });
+  }
 
   void setDrivingRecord(List<String> timeStamp, num count) {
     drivingRecord['timestamp'] = timeStamp;
     drivingRecord['count'] = count;
-
+    drivingRecord['warning'] = true;
   }
 
   Future<void> _processImage(InputImage inputImage) async {
@@ -206,8 +207,8 @@ class _DrivingState extends State<Driving> {
         var nowTime = DateTime.now();
         var duration = nowTime.difference(_eyesClosedStartTime!);
 
-        if (duration.inSeconds > 0.5){
-
+        if (duration.inSeconds > 0.5) {
+          print("졸음 운전 감지");
           _eyesClosedStartTime = null;
           _sleepCount += 1;
           _sleepTimes.add(DateFormat('HH:mm:ss').format(nowTime));
