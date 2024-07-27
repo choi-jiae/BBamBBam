@@ -41,6 +41,7 @@ class _CameraViewState extends State<CameraView> {
   int startModel = 0;
   bool _changingCameraLens = false;
   late DrivingRecord drivingRecordProvider;
+  late int _sleepCount;
 
   @override
   void initState() {
@@ -49,8 +50,14 @@ class _CameraViewState extends State<CameraView> {
     // 첫 번째 프레임 렌더링 후에 팝업 다이얼로그 표시
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showPopupDialog();
-      drivingRecordProvider =
-          Provider.of<DrivingRecord>(context, listen: false);
+      // drivingRecordProvider =
+      //     Provider.of<DrivingRecord>(context, listen: false);
+      // _sleepCount = drivingRecordProvider.drivingRecord['count'];
+      setState(() {
+        drivingRecordProvider =
+            Provider.of<DrivingRecord>(context, listen: false);
+        _sleepCount = drivingRecordProvider.drivingRecord['count'];
+      });
     });
   }
 
@@ -95,6 +102,8 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
+    final sleepCount =
+        Provider.of<DrivingRecord>(context).drivingRecord['count'];
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text("BBAMI")),
@@ -129,22 +138,56 @@ class _CameraViewState extends State<CameraView> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
-                    child: Row(children: [
-                  IconButton(
-                    icon: const Text('🚗', style: TextStyle(fontSize: 24)),
-                    onPressed: () {
-                      // Toggle camera logic
-                    },
-                  ), // 운전대 이모티콘 사용
-                  Text(
-                    formatTime(_seconds),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  //     child: Row(children: [
+                  //   IconButton(
+                  //     icon: const Text('🚗', style: TextStyle(fontSize: 24)),
+                  //     onPressed: () {
+                  //       // Toggle camera logic
+                  //     },
+                  //   ), // 운전대 이모티콘 사용
+                  //   Text(
+                  //     formatTime(_seconds),
+                  //     style: const TextStyle(
+                  //       color: Colors.white,
+                  //       fontSize: 24,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),
+                  // ])
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Text('🚗',
+                                style: TextStyle(fontSize: 24)),
+                            onPressed: () {
+                              // Toggle camera logic
+                            },
+                          ), // 운전대 이모티콘 사용
+                          Text(
+                            formatTime(_seconds),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '졸음운전 횟수: $sleepCount',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ])),
+                ),
               ),
             ),
           )

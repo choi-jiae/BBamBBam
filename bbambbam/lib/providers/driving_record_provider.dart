@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class DrivingRecord with ChangeNotifier {
   Map<String, dynamic> _drivingRecord = {
-    'date': '2023-10-12',
+    'date': '',
     'count': 0,
     'timestamp': [],
     'total': '00:00:00',
@@ -19,5 +19,16 @@ class DrivingRecord with ChangeNotifier {
   void updateField(String key, dynamic value) {
     _drivingRecord[key] = value;
     notifyListeners(); // 상태 변경 알림
+  }
+
+  void reset() {
+    _drivingRecord = {
+      'date': '',
+      'count': 0,
+      'timestamp': [],
+      'total': '',
+      'warning': false,
+    };
+    notifyListeners();
   }
 }
