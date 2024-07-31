@@ -103,10 +103,11 @@ class _CameraViewState extends State<CameraView> {
   }
 
   @override
-  void dispose() {
+  void dispose() async{
     _stopLiveFeed();
     String formattedTime = formatTime(_seconds);
-    drivingRecordProvider.updateField('total', formattedTime);
+    await drivingRecordProvider.updateField('total', formattedTime);
+    
     super.dispose();
   }
 
@@ -309,7 +310,7 @@ class _CameraViewState extends State<CameraView> {
       );
 
   Future _startImageStreamIfRequired() async {
-    _controller?.startImageStream(_processCameraImage).then((value) {
+    //_controller?.startImageStream(_processCameraImage).then((value) {
       if (widget.onCameraFeedReady != null) {
         widget.onCameraFeedReady!();
       }
@@ -317,7 +318,7 @@ class _CameraViewState extends State<CameraView> {
         widget.onCameraLensDirectionChanged!(
             _cameras[_cameraIndex].lensDirection);
       }
-    });
+    //});
   }
 
   Future _startLiveFeed() async {
