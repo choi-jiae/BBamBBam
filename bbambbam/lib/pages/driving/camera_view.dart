@@ -309,7 +309,7 @@ class _CameraViewState extends State<CameraView> {
       );
 
   Future _startImageStreamIfRequired() async {
-    _controller?.startImageStream(_processCameraImage).then((value) {
+    //_controller?.startImageStream(_processCameraImage).then((value) {
       if (widget.onCameraFeedReady != null) {
         widget.onCameraFeedReady!();
       }
@@ -317,7 +317,7 @@ class _CameraViewState extends State<CameraView> {
         widget.onCameraLensDirectionChanged!(
             _cameras[_cameraIndex].lensDirection);
       }
-    });
+    //});
   }
 
   Future _startLiveFeed() async {
