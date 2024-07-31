@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class DrivingRecord with ChangeNotifier {
   Map<String, dynamic> _drivingRecord = {
@@ -16,9 +17,11 @@ class DrivingRecord with ChangeNotifier {
     notifyListeners(); // 상태 변경 알림
   }
 
-  void updateField(String key, dynamic value) {
+  Future<void> updateField(String key, dynamic value) async{
     _drivingRecord[key] = value;
-    notifyListeners(); // 상태 변경 알림
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   void reset() {

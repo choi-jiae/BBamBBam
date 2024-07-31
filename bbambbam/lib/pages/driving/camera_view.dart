@@ -103,10 +103,11 @@ class _CameraViewState extends State<CameraView> {
   }
 
   @override
-  void dispose() {
+  void dispose() async{
     _stopLiveFeed();
     String formattedTime = formatTime(_seconds);
-    drivingRecordProvider.updateField('total', formattedTime);
+    await drivingRecordProvider.updateField('total', formattedTime);
+    
     super.dispose();
   }
 
