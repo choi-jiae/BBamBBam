@@ -3,6 +3,7 @@ import 'package:bbambbam/pages/report/report_mockdata.dart';
 import 'package:bbambbam/pages/report/report_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bbambbam/pages/report/report_total.dart';
 
 class Report extends StatefulWidget {
   const Report({super.key});
@@ -16,36 +17,48 @@ class _ReportState extends State<Report> {
   List<dynamic> drivingRecords = [];
 
   getUserReport() async {
-    // var reports =
-    //     await FirebaseFirestore.instance.collection('User').doc(uid).collection('Reports').get();
-    // var reports = await FirebaseFirestore.instance
-    //     .collection('Report')
-    //     .doc(uid)
-    //     .collection('DrivingRecords')
-    //     .get();
 
-    DocumentSnapshot userReportSnapshot =
+    DocumentSnapshot userReport =
         await FirebaseFirestore.instance.collection('Report').doc(uid).get();
 
-    if (userReportSnapshot.exists) {
-      var data = userReportSnapshot.data() as Map<String, dynamic>;
-      drivingRecords = data['drivingRecords'];
-
-// 출력 방법 1: 전체 documents를 출력
-      print('reports $drivingRecords');
-
-// // 출력 방법 2: 각 document의 data를 출력
-//     for (var doc in reports.docs) {
-//       print('report data: ${doc.data()}');
+    if (userReport.exists) {
+      var data = userReport.data() as Map<String, dynamic>;
+      drivingRecords = data['drivingRecords'].reversed.toList();
     }
-
-    // List<Map<String, dynamic>> reportList = [];
-    // for (var report in reports.docs) {
-    //   reportList.add(report.data());
-    // }
-    // print(reportList);
+    
     return drivingRecords;
   }
+
+  num getTotalWarningThisWeek() {
+    num totalWarningThisWeek = 0;
+    DateTime oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
+    for (var record in drivingRecords) {
+      if (DateTime.parse(record['date']).isAfter(oneWeekAgo) && record['warning']) {
+        totalWarningThisWeek += record['count'];
+      }
+    }
+    return totalWarningThisWeek;
+  }
+
+  int getPeakWarningTime() {
+    List<num> warningCounts = List.filled(24, 0);
+    for (var record in drivingRecords){
+      if (record['warning']){
+        for (var timestamp in record['timestamp']){
+          warningCounts[int.parse(timestamp.split(':')[0])] += 1;
+        }
+      }
+    }
+    
+    int peakWarningTime = 0;
+    for (var i = 0; i < warningCounts.length; i++){
+      if (warningCounts[i] > warningCounts[peakWarningTime]){
+        peakWarningTime = i;
+      }
+    }
+    return peakWarningTime;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +97,7 @@ class _ReportState extends State<Report> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 10),
+                      padding: const EdgeInsets.only(top: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -95,6 +108,13 @@ class _ReportState extends State<Report> {
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold),
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Center(
+                            child: ReportTotal(getTotalWarningThisWeek(), getPeakWarningTime()),
+                            ),
+
                           ...reports.map((report) => ReportItem(
                               report)), // mockData의 각 항목을 ReportItem으로 변환
                         ],

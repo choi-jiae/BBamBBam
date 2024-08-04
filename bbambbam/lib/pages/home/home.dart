@@ -121,7 +121,8 @@ class _HomeState extends State<Home> {
                             fontSize: 25,
                             fontWeight: FontWeight.bold),
                       ),
-                    ))
+                    )),
+                  
               ],
             )),
       ),
