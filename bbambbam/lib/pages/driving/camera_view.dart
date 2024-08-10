@@ -69,9 +69,9 @@ class _CameraViewState extends State<CameraView> {
         break;
       }
     }
-    if (_cameraIndex != -1) {
-      _startLiveFeed();
-    }
+    // if (_cameraIndex != -1) {
+    //   _startLiveFeed();
+    // }
   }
 
   void _startTimer() {
@@ -139,6 +139,7 @@ class _CameraViewState extends State<CameraView> {
           },
         ),
       ),
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           _liveFeedBody(),
@@ -449,7 +450,8 @@ class _CameraViewState extends State<CameraView> {
               onPressed: () {
                 Navigator.of(context).pop();
                 _startTimer();
-                _startImageStreamIfRequired();
+                _startLiveFeed();
+                // _startImageStreamIfRequired();
               },
             )),
           ],
