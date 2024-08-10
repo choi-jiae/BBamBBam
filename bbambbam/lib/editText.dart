@@ -1,6 +1,8 @@
+import 'package:bbambbam/providers/user_info_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditText extends StatefulWidget {
   final String label;
@@ -14,8 +16,8 @@ class EditText extends StatefulWidget {
   final String errorMessage;
   final TextEditingController controller;
 
-  EditText({
-    Key? key,
+  const EditText({
+    super.key,
     required this.label,
     required this.field,
     required this.editable,
@@ -26,7 +28,7 @@ class EditText extends StatefulWidget {
     required this.maxSize,
     required this.errorMessage,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<EditText> createState() => _EditTextState();
@@ -38,7 +40,7 @@ class _EditTextState extends State<EditText> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         width: MediaQuery.of(context).size.width,
         child: Column(children: [
           Row(children: [
@@ -56,9 +58,9 @@ class _EditTextState extends State<EditText> {
                     enabled: _isEditable, // 사용 가능한 상태로 설정
                     decoration: InputDecoration(
                       hintText: widget.hintText,
-                      border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
                     ),
                     validator: (value) {
                       if (value != null && value.length < widget.maxSize) {
@@ -67,40 +69,51 @@ class _EditTextState extends State<EditText> {
                       return null;
                     })),
             Expanded(
-                flex: 2,
-                child: IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    setState(() {
-                      if (widget.editable == true) {
-                        _isEditable = true;
-                      }
-                    });
-                  },
-                ))
+              flex: 2,
+              child: widget.editable
+                  ? IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          _isEditable = true;
+                        });
+                      },
+                    )
+                  : Container(),
+            )
           ]),
           if (_isEditable)
             Padding(
-              padding: EdgeInsets.all(16.0), // 모든 방향으로 16.0의 패딩 추가
+              padding: const EdgeInsets.all(16.0), // 모든 방향으로 16.0의 패딩 추가
               child: TextButton(
                 onPressed: () {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        String uid = FirebaseAuth.instance.currentUser!.uid;
-                        FirebaseFirestore.instance
-                            .collection("User")
-                            .doc(uid)
-                            .update({widget.field: widget.controller.text});
+                        // String uid = FirebaseAuth.instance.currentUser!.uid;
+                        // FirebaseFirestore.instance
+                        //     .collection("User")
+                        //     .doc(uid)
+                        //     .update({widget.field: widget.controller.text});
+                        final userInfoProvider = Provider.of<UserInfoProvider>(
+                            context,
+                            listen: false);
+
+                        // Firestore 업데이트 및 상태 관리
+                        String newValue = widget.controller.text;
+                        userInfoProvider.updateUserInfo(widget.field, newValue);
 
                         return AlertDialog(
-                          title: Text("수정 확인"),
+                          title: const Text("수정 확인"),
                           content: Text("${widget.label} 변경이 완료되었습니다."),
                           actions: <Widget>[
                             TextButton(
-                                child: Text("확인"),
+                                child: const Text("확인"),
                                 onPressed: () {
                                   Navigator.of(context).pop(); // 다이얼로그 닫기
+                                  setState(() {
+                                    _isEditable = false;
+                                  });
                                 }),
                             // TextButton(
                             //     child: Text("취소"),
@@ -111,7 +124,7 @@ class _EditTextState extends State<EditText> {
                         );
                       });
                 },
-                child: Text(
+                child: const Text(
                   "수정하기",
                   style: TextStyle(
                     color: Colors.blue,
