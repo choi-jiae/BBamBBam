@@ -14,8 +14,8 @@ class PSEditText extends StatefulWidget {
   final String errorMessage;
   final TextEditingController controller;
 
-  PSEditText({
-    Key? key,
+  const PSEditText({
+    super.key,
     required this.label,
     required this.field,
     required this.editable,
@@ -26,7 +26,7 @@ class PSEditText extends StatefulWidget {
     required this.maxSize,
     required this.errorMessage,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<PSEditText> createState() => _EditTextState();
@@ -41,7 +41,7 @@ class _EditTextState extends State<PSEditText> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         width: MediaQuery.of(context).size.width,
         child: Column(children: [
           Row(children: [
@@ -59,9 +59,9 @@ class _EditTextState extends State<PSEditText> {
                     enabled: _isEditable, // 사용 가능한 상태로 설정
                     decoration: InputDecoration(
                       hintText: widget.hintText,
-                      border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
                     ),
                     validator: (value) {
                       if (value != null && value.length < widget.maxSize) {
@@ -72,7 +72,7 @@ class _EditTextState extends State<PSEditText> {
             Expanded(
                 flex: 2,
                 child: IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {
                     setState(() {
                       if (widget.editable == true) {
@@ -88,7 +88,7 @@ class _EditTextState extends State<PSEditText> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         flex: 4,
                         child: Center(child: Text("현재 비밀번호")),
                       ),
@@ -102,8 +102,8 @@ class _EditTextState extends State<PSEditText> {
                               enabled: _isEditable, // 사용 가능한 상태로 설정
                               decoration: InputDecoration(
                                 hintText: widget.hintText,
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
+                                border: const OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),
                               ),
                               validator: (value) {
@@ -113,7 +113,7 @@ class _EditTextState extends State<PSEditText> {
                                 }
                                 return null;
                               })),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: SizedBox(),
                       )
@@ -123,7 +123,7 @@ class _EditTextState extends State<PSEditText> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         flex: 4,
                         child: Center(child: Text("새 비밀번호")),
                       ),
@@ -137,8 +137,8 @@ class _EditTextState extends State<PSEditText> {
                               enabled: _isEditable, // 사용 가능한 상태로 설정
                               decoration: InputDecoration(
                                 hintText: widget.hintText,
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
+                                border: const OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),
                               ),
                               validator: (value) {
@@ -148,7 +148,7 @@ class _EditTextState extends State<PSEditText> {
                                 }
                                 return null;
                               })),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: SizedBox(),
                       )
@@ -158,7 +158,7 @@ class _EditTextState extends State<PSEditText> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         flex: 4,
                         child: Center(child: Text("새 비밀번호 확인")),
                       ),
@@ -172,8 +172,8 @@ class _EditTextState extends State<PSEditText> {
                               enabled: _isEditable, // 사용 가능한 상태로 설정
                               decoration: InputDecoration(
                                 hintText: widget.hintText,
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
+                                border: const OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),
                               ),
                               validator: (value) {
@@ -183,19 +183,19 @@ class _EditTextState extends State<PSEditText> {
                                 }
                                 return null;
                               })),
-                      Expanded(
+                      const Expanded(
                         flex: 2,
                         child: SizedBox(),
                       )
                     ],
                   )),
               Padding(
-                padding: EdgeInsets.all(16.0), // 모든 방향으로 16.0의 패딩 추가
+                padding: const EdgeInsets.all(16.0), // 모든 방향으로 16.0의 패딩 추가
                 child: TextButton(
                   onPressed: () {
                     _pwcheck();
                   },
-                  child: Text(
+                  child: const Text(
                     "수정하기",
                     style: TextStyle(
                       color: Colors.blue,
@@ -231,6 +231,11 @@ class _EditTextState extends State<PSEditText> {
         } else {
           await result.user!.updatePassword(newPW);
           print('비밀번호 변경 완료');
+          setState(() {
+            if (widget.editable == true) {
+              _isEditable = false;
+            }
+          });
           checkDialog("비밀번호 변경이 완료되었습니다.");
         }
       } catch (updateError) {
@@ -247,11 +252,11 @@ class _EditTextState extends State<PSEditText> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("비밀번호 확인"),
+            title: const Text("비밀번호 확인"),
             content: Text(message),
             actions: <Widget>[
               TextButton(
-                  child: Text("확인"),
+                  child: const Text("확인"),
                   onPressed: () {
                     Navigator.of(context).pop(); // 다이얼로그 닫기
                   }),
