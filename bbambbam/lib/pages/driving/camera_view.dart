@@ -103,12 +103,17 @@ class _CameraViewState extends State<CameraView> {
   }
 
   @override
-  void dispose() async{
+  void dispose() {
     _stopLiveFeed();
     String formattedTime = formatTime(_seconds);
-    await drivingRecordProvider.updateField('total', formattedTime);
-    
+    handleUpdateTotalTime(formattedTime);
+
     super.dispose();
+  }
+
+  Future<void> handleUpdateTotalTime(String formattedTime) async {
+    await drivingRecordProvider.updateField('total', formattedTime);
+    // await drivingRecordProvider.updateField('count', _sleepCount);
   }
 
   @override
@@ -311,13 +316,13 @@ class _CameraViewState extends State<CameraView> {
 
   Future _startImageStreamIfRequired() async {
     //_controller?.startImageStream(_processCameraImage).then((value) {
-      if (widget.onCameraFeedReady != null) {
-        widget.onCameraFeedReady!();
-      }
-      if (widget.onCameraLensDirectionChanged != null) {
-        widget.onCameraLensDirectionChanged!(
-            _cameras[_cameraIndex].lensDirection);
-      }
+    if (widget.onCameraFeedReady != null) {
+      widget.onCameraFeedReady!();
+    }
+    if (widget.onCameraLensDirectionChanged != null) {
+      widget
+          .onCameraLensDirectionChanged!(_cameras[_cameraIndex].lensDirection);
+    }
     //});
   }
 
