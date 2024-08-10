@@ -4,6 +4,7 @@ import 'package:bbambbam/pages/report/report_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bbambbam/pages/report/report_total.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Report extends StatefulWidget {
   const Report({super.key});
@@ -62,15 +63,20 @@ class _ReportState extends State<Report> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height, // 화면 높이만큼 설정
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        centerTitle: true,
+        title: const Text(
+          '나의 운전 리포트',
+          style: TextStyle(
+              color: Colors.black45, fontSize: 25, fontWeight: FontWeight.w400),
         ),
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
       child: FutureBuilder(
         future: getUserReport(),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
@@ -82,53 +88,29 @@ class _ReportState extends State<Report> {
             return const Center(child: Text('운전 리포트가 없습니다.'));
           } else if (snapshot.hasData) {
             var reports = snapshot.data as List;
-            return SingleChildScrollView(
-              child: Column(
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    height: 5,
-                    width: 50,
-                    margin: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(15),
+                  Center(
+                    child: ReportTotal(getTotalWarningThisWeek(), getPeakWarningTime()),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            '📑 운전 리포트',
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Center(
-                            child: ReportTotal(getTotalWarningThisWeek(), getPeakWarningTime()),
-                            ),
-
-                          ...reports.map((report) => ReportItem(
-                              report)), // mockData의 각 항목을 ReportItem으로 변환
-                        ],
+                        children: reports.map((report) => ReportItem(report)).toList(),
                       ),
                     ),
-                  )
+                  ),
+                   
+
                 ],
-              ),
-            );
+              );
+            
           } else {
             return const Center(child: Text('운전 리포트가 없습니다.'));
           }
         },
-      ),
+      ),)
     );
   }
 }

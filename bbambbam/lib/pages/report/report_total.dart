@@ -7,14 +7,7 @@ class ReportTotal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(20),
-      height: 150,
-      decoration: const BoxDecoration(
-        color: Colors.blueAccent,
-      ),
-      child: Row(
+    return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Container(
@@ -24,12 +17,14 @@ class ReportTotal extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.all(
                 Radius.circular(15),
-            ),
+              ),
+              boxShadow:
+                  [BoxShadow(color: Color.fromARGB(255, 210, 210, 210), blurRadius: 5, spreadRadius: 1)],
             ),
             child: Column(
               children: [
                 const Text(
-                  '지난 일주일간\n 졸음운전 위험 횟수',
+                  '졸음운전 위험 횟수',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.black54,
@@ -53,6 +48,8 @@ class ReportTotal extends StatelessWidget {
               borderRadius: BorderRadius.all(
                 Radius.circular(15),
             ),
+              boxShadow:
+                  [BoxShadow(color: Color.fromARGB(255, 210, 210, 210), blurRadius: 5, spreadRadius: 1)],
             ),
             child:Column(
               children: [
@@ -76,7 +73,6 @@ class ReportTotal extends StatelessWidget {
               ],)
           ),
         ],
-      ),
-    );
+      );
   }
 }
