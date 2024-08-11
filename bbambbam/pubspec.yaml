@@ -59,6 +59,7 @@ dependencies:
   carousel_slider: ^4.0.0
   audioplayers: ^6.0.0
   provider:
+  table_calendar: ^3.1.2
 
 dev_dependencies:
   flutter_test:

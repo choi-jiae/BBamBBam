@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bbambbam/pages/report/report_total.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:bbambbam/pages/report/monthly_report.dart';
+
 
 class Report extends StatefulWidget {
   const Report({super.key});
@@ -16,6 +18,8 @@ class Report extends StatefulWidget {
 class _ReportState extends State<Report> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   List<dynamic> drivingRecords = [];
+  PageController _pageController = PageController();
+  int _currentPage = DateTime.now().month - 1;
 
   getUserReport() async {
 
@@ -30,35 +34,20 @@ class _ReportState extends State<Report> {
     return drivingRecords;
   }
 
-  num getTotalWarningThisWeek() {
-    num totalWarningThisWeek = 0;
-    DateTime oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
-    for (var record in drivingRecords) {
-      if (DateTime.parse(record['date']).isAfter(oneWeekAgo) && record['warning']) {
-        totalWarningThisWeek += record['count'];
-      }
-    }
-    return totalWarningThisWeek;
+  List<dynamic> getFilteredReports(int month) {
+    return drivingRecords.where((record) {
+      DateTime date = DateTime.parse(record['date']);
+      return date.month == month;
+    }).toList();
   }
 
-  int getPeakWarningTime() {
-    List<num> warningCounts = List.filled(24, 0);
-    for (var record in drivingRecords){
-      if (record['warning']){
-        for (var timestamp in record['timestamp']){
-          warningCounts[int.parse(timestamp.split(':')[0])] += 1;
-        }
-      }
-    }
-    
-    int peakWarningTime = 0;
-    for (var i = 0; i < warningCounts.length; i++){
-      if (warningCounts[i] > warningCounts[peakWarningTime]){
-        peakWarningTime = i;
-      }
-    }
-    return peakWarningTime;
+  @override
+  void initState() {
+    super.initState();
+    getUserReport();
   }
+
+
 
 
   @override
@@ -89,22 +78,10 @@ class _ReportState extends State<Report> {
           } else if (snapshot.hasData) {
             var reports = snapshot.data as List;
             return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: ReportTotal(getTotalWarningThisWeek(), getPeakWarningTime()),
-                    ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: reports.map((report) => ReportItem(report)).toList(),
-                      ),
-                    ),
-                  ),
-                   
-
-                ],
-              );
+              children: [
+                MonthlyReport(drivingRecords: reports)
+                
+                ]);
             
           } else {
             return const Center(child: Text('운전 리포트가 없습니다.'));
