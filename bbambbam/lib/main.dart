@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 final routes = {
   "/": (context) => const landing(),
@@ -26,10 +27,12 @@ final routes = {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ko_KR', null);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // runApp(const MyApp());
+  
   runApp(
     MultiProvider(
       providers: [

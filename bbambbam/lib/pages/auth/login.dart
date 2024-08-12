@@ -176,7 +176,7 @@ class _LoginState extends State<Login> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
       ),
       child: const Text(
         '로그인',

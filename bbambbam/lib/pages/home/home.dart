@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:bbambbam/pages/driving/driving.dart';
 import 'package:bbambbam/pages/report/report.dart';
 import 'package:bbambbam/pages/home/sidetap/sidetap.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class Home extends StatefulWidget {
@@ -15,15 +16,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  void _showFullBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return const Report();
-      },
-      isScrollControlled: true, // 풀 스크린을 위한 설정
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,48 +75,23 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      bottomSheet: GestureDetector(
-        onTap: () => _showFullBottomSheet(context),
-        onVerticalDragUpdate: (details) {
-          if (details.delta.dy < 0) {
-            // 위로 swipe
-            _showFullBottomSheet(context);
-          }
-        },
-        child: Container(
-            height: 100,
-            decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                )),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 5,
-                  width: 50,
-                  margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 20, top: 10),
-                      child: Text(
-                        '📑 운전 리포트',
-                        style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ))
-              ],
-            )),
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: SizedBox(
+        width: 70.w,
+        height: 70.h,
+        child:FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Report()),
+            );
+          },
+          child: Icon(
+            Icons.article_outlined, 
+            color: Colors.black38,
+            size: 40,),
+          backgroundColor: Colors.white,
+      ),)
     );
   }
 }
