@@ -53,11 +53,7 @@ class _MonthlyReportState extends State<MonthlyReport> {
             getTotalWarningThisWeek(widget.drivingRecords), 
             getPeakWarningTime(widget.drivingRecords)),
           ),
-          TableCalendar(
-            focusedDay: DateTime.now(), 
-            firstDay: DateTime.utc(2024, 1, 1), 
-            lastDay: DateTime.utc(2025, 12, 31),
-          )
+
 
         // Expanded(
         //   child: SingleChildScrollView(
