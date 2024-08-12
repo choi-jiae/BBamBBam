@@ -238,7 +238,7 @@ class _SignupState extends State<Signup> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
       ),
       child: const Text("가입하기",
           style: TextStyle(

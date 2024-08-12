@@ -11,6 +11,7 @@ class ReportTotal extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Container(
+            height: 120,
             alignment: Alignment.center,
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
@@ -22,6 +23,7 @@ class ReportTotal extends StatelessWidget {
                   [BoxShadow(color: Color.fromARGB(255, 210, 210, 210), blurRadius: 5, spreadRadius: 1)],
             ),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   '졸음운전 위험 횟수',
@@ -41,6 +43,7 @@ class ReportTotal extends StatelessWidget {
               ],),
           ),
           Container(
+            height: 120,
             alignment: Alignment.center,
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
@@ -52,6 +55,7 @@ class ReportTotal extends StatelessWidget {
                   [BoxShadow(color: Color.fromARGB(255, 210, 210, 210), blurRadius: 5, spreadRadius: 1)],
             ),
             child:Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   '졸음 운전을\n가장 많이 하는 시간대',

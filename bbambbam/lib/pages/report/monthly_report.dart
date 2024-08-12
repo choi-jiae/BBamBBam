@@ -15,9 +15,9 @@ class _MonthlyReportState extends State<MonthlyReport> {
 
     num getTotalWarningThisWeek(List<dynamic> drivingRecords) {
     num totalWarningThisWeek = 0;
-    DateTime oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
+
     for (var record in drivingRecords) {
-      if (DateTime.parse(record['date']).isAfter(oneWeekAgo) && record['warning']) {
+      if (record['warning']) {
         totalWarningThisWeek += record['count'];
       }
     }
@@ -53,16 +53,6 @@ class _MonthlyReportState extends State<MonthlyReport> {
             getTotalWarningThisWeek(widget.drivingRecords), 
             getPeakWarningTime(widget.drivingRecords)),
           ),
-
-
-        // Expanded(
-        //   child: SingleChildScrollView(
-        //     child: Column(
-        //       children: widget.drivingRecords.map((report) => ReportItem(report)).toList(),
-        //     ),
-        //   ),
-        // ),
-          
 
       ],
     );
