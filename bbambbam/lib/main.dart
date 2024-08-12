@@ -5,6 +5,7 @@ import 'package:bbambbam/pages/auth/login.dart';
 import 'package:bbambbam/pages/home/sidetap/mypage.dart';
 import 'package:bbambbam/pages/home/sidetap/qna.dart';
 import 'package:bbambbam/providers/driving_record_provider.dart';
+import 'package:bbambbam/providers/user_info_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,6 +37,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DrivingRecord()),
+        ChangeNotifierProvider(create: (_) => UserInfoProvider()),
       ],
       child: const MyApp(),
     ),

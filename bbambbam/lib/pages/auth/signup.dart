@@ -30,7 +30,7 @@ class _SignupState extends State<Signup> {
       return;
     } else {
       formKey.currentState!.save();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("가입이 완료되었습니다. 로그인을 진행해주세요."),
         duration: Duration(seconds: 1),
       ));
@@ -42,7 +42,7 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             '회원가입',
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class _SignupState extends State<Signup> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 30, bottom: 30),
+                    padding: const EdgeInsets.only(top: 30, bottom: 30),
                     child: Center(
                       child: GestureDetector(
                         onTap: getImage, //누르면 이동
@@ -70,7 +70,7 @@ class _SignupState extends State<Signup> {
                           backgroundImage:
                               _image != null ? FileImage(_image!) : null,
                           // backgroundColor: Colors.blue,
-                          child: Align(
+                          child: const Align(
                             alignment: Alignment.bottomLeft,
                             child: CircleAvatar(
                               backgroundColor: Colors.blue,
@@ -119,7 +119,7 @@ class _SignupState extends State<Signup> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("개인 정보 수집 동의(필수)"),
+                            const Text("개인 정보 수집 동의(필수)"),
                             Checkbox(
                               value: _isCheckT,
                               onChanged: (bool? value) {
@@ -161,7 +161,7 @@ class _SignupState extends State<Signup> {
     //   return "";
     // }
     // DateTime.now().millisecondsSinceEpoch
-    String fileName = 'userimage/${uid}.jpg';
+    String fileName = 'userimage/$uid.jpg';
     FirebaseStorage storage = FirebaseStorage.instance;
 
     try {
@@ -171,7 +171,6 @@ class _SignupState extends State<Signup> {
       } else {
         await storage.ref(fileName).putFile(_image!);
         imageUrl = await storage.ref(fileName).getDownloadURL();
-        print('Image uploaded to Firebase Storage.');
       }
     } catch (e) {
       print(e);
@@ -185,7 +184,7 @@ class _SignupState extends State<Signup> {
         if (!_isCheckT) {
           // 체크박스가 선택되지 않았을 경우 경고 표시
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('개인 정보 수집에 동의해주세요.'),
               backgroundColor: Colors.red,
             ),
@@ -204,10 +203,8 @@ class _SignupState extends State<Signup> {
 
                 await uploadImageToFirebase(uid);
 
-                if (imageUrl == null) {
-                  imageUrl =
-                      "gs://bbambbam-a937f.appspot.com/userimage/pubao.jpg";
-                }
+                imageUrl ??=
+                    "gs://bbambbam-a937f.appspot.com/userimage/pubao.jpg";
 
                 FirebaseFirestore.instance.collection('User').doc(uid).set({
                   'Email': _emailController.text,
@@ -218,14 +215,14 @@ class _SignupState extends State<Signup> {
                 debugPrint("Failed to create user.");
               }
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text("가입이 완료되었습니다. 로그인을 진행해주세요."),
                 duration:
                     Duration(seconds: 2), // 시간을 조금 더 주어 사용자가 메시지를 볼 시간을 확보
               ));
 
               // SnackBar 표시 후에 화면 전환을 위해 Future.delayed를 사용합니다.
-              Future.delayed(Duration(seconds: 2), () {
+              Future.delayed(const Duration(seconds: 2), () {
                 Navigator.of(context).pop(); // SnackBar가 사라진 후 이전 화면으로 돌아갑니다.
               });
             });
@@ -241,9 +238,9 @@ class _SignupState extends State<Signup> {
         }
       },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent),
+        backgroundColor: WidgetStateProperty.all<Color>(Colors.blueAccent),
       ),
-      child: Text("가입하기",
+      child: const Text("가입하기",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -264,7 +261,7 @@ Widget TextFormFieldComponent(
     int maxSize,
     String errorMessage) {
   return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width,
       child: Row(children: [
         Expanded(
@@ -281,22 +278,23 @@ Widget TextFormFieldComponent(
                 textInputAction: textInputAction,
                 decoration: InputDecoration(
                   hintText: hintText,
-                  border: OutlineInputBorder(), // 입력 필드에 테두리 추가
-                  contentPadding: EdgeInsets.symmetric(
+                  border: const OutlineInputBorder(), // 입력 필드에 테두리 추가
+                  contentPadding: const EdgeInsets.symmetric(
                       vertical: 10, horizontal: 10), // 입력 필드 내부 패딩 조정
                 ),
                 validator: (value) {
                   if (value!.length < maxSize) {
                     return errorMessage;
                   }
+                  return null;
                 }))
       ]));
 }
 
 Widget TextFormFieldComponent2(
     BuildContext context,
-    TextEditingController _pwController,
-    TextEditingController _pwConfirmController,
+    TextEditingController pwController,
+    TextEditingController pwConfirmController,
     String label,
     bool obscureText,
     TextInputType keyboardType,
@@ -306,7 +304,7 @@ Widget TextFormFieldComponent2(
     String errorMessage) {
   return Column(children: [
     Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         width: MediaQuery.of(context).size.width,
         child: Row(children: [
           Expanded(
@@ -316,47 +314,48 @@ Widget TextFormFieldComponent2(
           Expanded(
               flex: 3,
               child: TextFormField(
-                  controller: _pwController,
+                  controller: pwController,
                   autofocus: true,
                   obscureText: obscureText,
                   keyboardType: keyboardType,
                   textInputAction: textInputAction,
                   decoration: InputDecoration(
                     hintText: hintText,
-                    border: OutlineInputBorder(), // 입력 필드에 테두리 추가
-                    contentPadding: EdgeInsets.symmetric(
+                    border: const OutlineInputBorder(), // 입력 필드에 테두리 추가
+                    contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 10), // 입력 필드 내부 패딩 조정
                   ),
                   validator: (value) {
                     if (value!.length < maxSize) {
                       return errorMessage;
                     }
+                    return null;
                   }))
         ])),
     Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         width: MediaQuery.of(context).size.width,
         child: Row(children: [
-          Expanded(
+          const Expanded(
             flex: 3,
             child: Center(child: Text("비밀번호 확인")),
           ),
           Expanded(
               flex: 3,
               child: TextFormField(
-                  controller: _pwConfirmController,
+                  controller: pwConfirmController,
                   autofocus: true,
                   obscureText: obscureText,
                   keyboardType: keyboardType,
                   textInputAction: textInputAction,
                   decoration: InputDecoration(
                     hintText: hintText,
-                    border: OutlineInputBorder(), // 입력 필드에 테두리 추가
-                    contentPadding: EdgeInsets.symmetric(
+                    border: const OutlineInputBorder(), // 입력 필드에 테두리 추가
+                    contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 10), // 입력 필드 내부 패딩 조정
                   ),
                   validator: (value) {
-                    if (value!.isEmpty || value != _pwController.text) {
+                    if (value!.isEmpty || value != pwController.text) {
                       return "비밀번호가 일치하지 않습니다.";
                     }
                     return null;
