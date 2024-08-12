@@ -1,4 +1,5 @@
 import 'package:bbambbam/pages/auth/login.dart';
+import 'package:bbambbam/pages/home/sidetap/about.dart';
 import 'package:bbambbam/pages/home/sidetap/contact.dart';
 import 'package:bbambbam/pages/home/sidetap/mypage.dart';
 import 'package:bbambbam/pages/home/sidetap/qna.dart';
@@ -16,6 +17,7 @@ class Sidetap extends StatelessWidget {
         Provider.of<UserInfoProvider>(context, listen: true);
 
     return Drawer(
+      backgroundColor: Colors.white,
       child: userInfoProvider.isLoading
           ? const Center(
               child: CircularProgressIndicator()) // 정보가 준비되지 않았다면 인디케이터 표시
@@ -47,7 +49,9 @@ class Sidetap extends StatelessWidget {
                 MenuBuilder(
                   context,
                   name: "About",
+                  path: "/about",
                   icondata: Icons.info_outline,
+                  destination: const About(),
                 ),
                 MenuBuilder(
                   context,

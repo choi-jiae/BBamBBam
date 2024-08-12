@@ -4,6 +4,7 @@ import 'package:bbambbam/landing.dart';
 import 'package:bbambbam/pages/auth/login.dart';
 import 'package:bbambbam/pages/home/sidetap/mypage.dart';
 import 'package:bbambbam/pages/home/sidetap/qna.dart';
+import 'package:bbambbam/pages/home/sidetap/about.dart';
 import 'package:bbambbam/providers/driving_record_provider.dart';
 import 'package:bbambbam/providers/user_info_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,7 @@ final routes = {
   "/my": (context) => const Mypage(),
   "/contact": (context) => const Contact(),
   "/qna": (context) => const QNA(),
+  "/about": (context) => const About(),
 };
 
 void main() async {
